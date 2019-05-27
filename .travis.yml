@@ -3,3 +3,10 @@ jdk:
   - openjdk10
 script:
   - mvn clean package
+deploy:
+    provider: releases
+    api_key: "$GITHUB_OATH_TOKEN"
+    file: "FILE TO UPLOAD"
+    skip_cleanup: true
+    on:
+      tags: true
