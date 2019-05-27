@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +24,7 @@ import java.util.Set;
 
 public class InventoryEvents implements Listener {
     private final Main plugin;
-    private final static Inventory SERVER_SELECTOR = Bukkit.createInventory(null,54,"§6Lobby Selector");
+    final static Inventory SERVER_SELECTOR = Bukkit.createInventory(null,54,"§6Lobby Selector");
     private Set<String> server_ids;
     InventoryEvents(Main plugin) {
         this.plugin = plugin;
@@ -110,27 +109,6 @@ public class InventoryEvents implements Listener {
         Player p = (Player) e.getWhoClicked();
         if(!p.hasPermission("lobbytools.bypass.inventory")) {
             e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        ItemStack item = e.getItem();
-
-        if(item == null) {
-            if(!p.hasPermission("lobbytools.bypass.inventory")) e.setCancelled(true);
-            return;
-        }
-        switch(item.getType()) {
-            case CLOCK:
-                p.sendMessage("§cNot Implemented");
-                break;
-            case NETHER_STAR:
-                p.openInventory(SERVER_SELECTOR);
-                break;
-            default:
-                if(!p.hasPermission("lobbytools.bypass.inventory")) e.setCancelled(true);
         }
     }
 }

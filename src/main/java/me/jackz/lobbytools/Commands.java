@@ -5,12 +5,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.io.IOException;
 
 public class Commands implements CommandExecutor {
     private final Main plugin;
-    public Commands(Main plugin) {
+    Commands(Main plugin) {
         this.plugin = plugin;
     }
     @Override
@@ -43,7 +44,9 @@ public class Commands implements CommandExecutor {
                 Bukkit.dispatchCommand(sender, "plugman reload LobbyTools");
                 break;
             case "help":
-                sender.sendMessage("Help coming soon");
+                PluginDescriptionFile pdf = plugin.getDescription();
+                sender.sendMessage("§6LobbyTools §eVersion " +  pdf.getVersion());
+                sender.sendMessage("§7Sorry, help is currently a work in progress.");
                 break;
             default:
                 sender.sendMessage("§cUnknown argument, try /lt help");

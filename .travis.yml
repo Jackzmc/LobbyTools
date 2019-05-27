@@ -9,17 +9,13 @@ script:
 deploy:
   - provider: releases
     api_key: "$GITHUB_OATH_TOKEN"
+    name: Build $(date '+%Y%m%d%H%M%S')-$TRAVIS_JOB_NUMBER
     file: "target/release.jar"
     skip_cleanup: true
-    prerelease: true
+    draft: true
     on:
       branch: master
-  - provider: releases
-    api_key: "$GITHUB_OATH_TOKEN"
-    file: "target/release.jar"
-    skip_cleanup: true
-    on:
-      branch: release
+      tags: true
 notifications:
   email:
     on_failure: change
