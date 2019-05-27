@@ -12,10 +12,12 @@
     <name>LobbyTools</name>
 
     <properties>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
+        <finalName>${finalName}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>

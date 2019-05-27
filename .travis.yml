@@ -1,12 +1,26 @@
 language: java
+cache:
+  directories:
+    - $HOME/.m2
 jdk:
   - openjdk10
 script:
-  - mvn clean package
+  - mvn install -DfinalName=release -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 deploy:
-    provider: releases
+  - provider: releases
     api_key: "$GITHUB_OATH_TOKEN"
-    file: "FILE TO UPLOAD"
+    file: "target/release.jar"
+    skip_cleanup: true
+    prerelease: true
+    on:
+      branch: master
+  - provider: releases
+    api_key: "$GITHUB_OATH_TOKEN"
+    file: "target/release.jar"
     skip_cleanup: true
     on:
-      tags: true
+      branch: release
+notifications:
+  email:
+    on_failure: change
+    on_success: never
