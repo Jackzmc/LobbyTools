@@ -1,0 +1,12 @@
+name: LobbyTools
+version: ${project.version}
+main: me.jackz.lobbytools.Main
+api-version: 1.14
+load: STARTUP
+softdepend: [WorldGuard]
+depend: []
+commands:
+  lobbytools:
+    aliases: [lt,lb]
+    usage: /lobbytools help
+    description: Lobby Tools Main Commmand
