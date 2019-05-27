@@ -20,6 +20,7 @@ public final class Main extends JavaPlugin {
         CONFIG_FILE = new File (this.getDataFolder(), "config.yml");;
         getServer().getPluginManager().registerEvents(new JoinEvent(this),this);
         getServer().getPluginManager().registerEvents(inventoryEvents,this);
+        getServer().getPluginManager().registerEvents(new EntityDamage(this),this);
         getCommand("lobbytools").setExecutor(new Commands(this));
 
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -48,4 +49,5 @@ public final class Main extends JavaPlugin {
             e1.printStackTrace();
         }
     }
+
 }

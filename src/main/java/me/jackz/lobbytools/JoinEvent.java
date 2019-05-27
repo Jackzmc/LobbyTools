@@ -1,6 +1,7 @@
 package me.jackz.lobbytools;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -20,11 +21,16 @@ public class JoinEvent implements Listener {
         String config_world = plugin.getConfig().getString("lobby_world");
         if(config_world != null) {
             World world = Bukkit.getWorld(config_world);
-            /*if(!p.hasPermission("lobbytools.bypass.lobby")) {*/
-                p.getInventory().clear();
-                p.getInventory().setItem(1,Util.getNamedItem(Material.CLOCK,"§6Player Hider","§7Toggle hiding players"));
-                p.getInventory().setItem(4,Util.getNamedItem(Material.NETHER_STAR,"§6Server Selector","§7Select a server"));
-            /*}*/
+            if(p.getWorld().equals(world)) {
+                /*if(!p.hasPermission("lobbytools.bypass.lobby")) {*/
+                    p.setGameMode(GameMode.ADVENTURE);
+                    p.getInventory().clear();
+                    p.getInventory().setItem(1,Util.getNamedItem(Material.CLOCK,"§6Player Hider","§7Toggle hiding players"));
+                    p.getInventory().setItem(4,Util.getNamedItem(Material.NETHER_STAR,"§6Server Selector","§7Select a server"));
+                /*}*/
+
+            }
+
         }
     }
 
