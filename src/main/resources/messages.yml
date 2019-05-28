@@ -1,6 +1,23 @@
-nopermission: "&cYou do not have permission to use this command."
-playeronly: "You must be a player to use this command."
-unknownargument: "&cUnknown argument, try /lt help"
-parkour:
-    success: "&aSuccessfully created parkour region named &e%s"
-    invalid: "&cInvalid usage. Usage:"
+command:
+    help:
+     - "&e/lt parkour &7- manage parkour regions"
+     - "&e/lt reload &7- reloads the config file"
+    nopermission: "&cYou do not have permission to use this command."
+    playeronly: "You must be a player to use this command."
+    unknownargument: "&cUnknown argument, try /lt help"
+    notimplemented: "&cNot Implemented"
+    parkour:
+        help:
+            - "&e/lt parkour create <name> [min y] &7- creates a region with spawnpoint at your feet"
+            - "&e/lt parkour list &7- list all parkour regions"
+            - "&e/lt parkour remove <name> &7- remove a certain region"
+        usage: "&cUsage: /lobbytools parkour help"
+        success: "&aSuccessfully created parkour region named &e%s"
+        invalid: "&cInvalid usage. Usage:"
+        invalidnumber: "&cInvalid minimum Y-Level. Please use a whole number"
+        noregionfound: "&cCould not create parkour region: No WorldGuard regions found at your location"
+        unknownargument: "&cUnknown parkour argument. Try /lt parkour help"
+    reload:
+        success: "&aSuccessfully reloaded configuration."
+        failed_general: "&cFailed to load configuration file"
+        failed_invalid: "&cFailed to load configuration file due to invalid configuration."

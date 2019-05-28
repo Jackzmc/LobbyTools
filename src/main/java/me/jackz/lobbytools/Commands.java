@@ -25,7 +25,7 @@ public class Commands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(!sender.hasPermission("lobbytools.command")) {
-            sender.sendMessage(lm.get("nopermission"));
+            sender.sendMessage(lm.get("command.nopermission"));
             return true;
         }
         if(args.length == 0) {
@@ -38,14 +38,14 @@ public class Commands implements CommandExecutor {
                     if(p.hasPermission("lobbytools.command.parkour")) {
                         //todo: check for worldguard
                         if(args.length < 2) {
-                            sender.sendMessage("§cUsage: /lobbytools parkour help");
+                            sender.sendMessage(lm.get("command.parkour.usage"));
                             return true;
                         }
                         ParkourRegionManager parkourRegionManager = plugin.getParkourRegionManager();
                         switch(args[1].toLowerCase()) {
                             case "create":
                                 if(args.length < 3) {
-                                    p.sendMessage(lm.get("parkour.invalid") + " §e/lt parkour create <name> [min y]");
+                                    p.sendMessage(lm.get("command.parkour.invalid") + "§e/lt parkour create <name> [min y]");
                                 }else{
                                     //todo: check for existing regions
                                     ParkourRegion region = new ParkourRegion(args[2],p.getLocation());
@@ -55,7 +55,7 @@ public class Commands implements CommandExecutor {
                                             int y = Integer.parseInt(args[3]);
                                             region.setMinY(y);
                                         }catch(NumberFormatException e) {
-                                            p.sendMessage("§cInvalid minimum Y-Level. Please use a whole number");
+                                            p.sendMessage(lm.get("command.parkour.invalidnumber"));
                                             return true;
                                         }
                                     }
@@ -68,7 +68,7 @@ public class Commands implements CommandExecutor {
                                             return true;
                                         }
                                     }
-                                    p.sendMessage("§cCould not create parkour region: No WorldGuard regions found");
+                                    p.sendMessage(lm.get("command.parkour.noregionfound"));
                                 }
                                 break;
                             case "list":
@@ -84,22 +84,19 @@ public class Commands implements CommandExecutor {
                                 }
                                 break;
                             case "remove":
-                                p.sendMessage("§cNot Implemented");
+                                p.sendMessage(lm.get("command.notimplemented"));
                                 break;
                             case "help":
-                                p.sendMessage("§6LobbyTools Parkour Regions" +
-                                        "\n§e/lt parkour create <name> [min y] §7- creates a region with spawnpoint at your feet" +
-                                        "\n§e/lt parkour list §7- list all parkour regions" +
-                                        "\n§e/lt parkour remove <name> §7- remove a certain region");
+                                p.sendMessage("§6LobbyTools Parkour Regions" + lm.get("command.parkour.help"));
                                 break;
                             default:
-                                p.sendMessage("§cUnknown parkour argument.  Try /lt parkour help");
+                                p.sendMessage(lm.get("command.unknownargument"));
                         }
                     }else{
-                        p.sendMessage(lm.get("nopermission"));
+                        p.sendMessage(lm.get("command.nopermission"));
                     }
                 }else{
-                    sender.sendMessage(lm.get("playeronly"));
+                    sender.sendMessage(lm.get("command.playeronly"));
                 }
                 break;
             case "reload":
@@ -107,27 +104,28 @@ public class Commands implements CommandExecutor {
                     try {
                         plugin.getConfig().load(Main.CONFIG_FILE);
                         plugin.reloadPlugin();
-                        sender.sendMessage("§aSuccessfully reloaded configuration.");
+                        sender.sendMessage(lm.get("command.reload.success"));
                     } catch (IOException e) {
-                        sender.sendMessage("§cFailed to load configuration file");
+                        sender.sendMessage(lm.get("command.reload.failed_general"));
                     } catch (InvalidConfigurationException e) {
-                        sender.sendMessage("§cFailed to load configuration file due to invalid configuration.");
+                        sender.sendMessage(lm.get("command.reload.failed_invalid"));
                     }
 
                 }else{
-                    sender.sendMessage(lm.get("nopermission"));
+                    sender.sendMessage(lm.get("command.nopermission"));
                 }
                 break;
             case "restart":
+                //THIS IS A DEV FEATURE ONLY, REMOVE ON PROD
                 Bukkit.dispatchCommand(sender, "plugman reload LobbyTools");
                 break;
             case "help":
                 PluginDescriptionFile pdf = plugin.getDescription();
                 sender.sendMessage("§6LobbyTools §eVersion " +  pdf.getVersion());
-                sender.sendMessage("§7Sorry, help is currently a work in progress.");
+                sender.sendMessage(lm.get("command.help"));
                 break;
             default:
-                sender.sendMessage(lm.get("unknownargument"));
+                sender.sendMessage(lm.get("command.unknownargument"));
         }
         return true;
     }
