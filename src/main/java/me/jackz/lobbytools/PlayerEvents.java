@@ -50,6 +50,7 @@ public class PlayerEvents implements Listener {
         }
     }
 
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
@@ -60,10 +61,26 @@ public class PlayerEvents implements Listener {
             return;
         }
         switch (item.getType()) {
-            case CLOCK:
-                p.sendMessage("§cNot Implemented");
+            case CLOCK: {
+                boolean is_hidden = plugin.hidden_map.getOrDefault(p.getUniqueId(), false);
+                if(is_hidden) {
+                    for (Player player : plugin.getServer().getOnlinePlayers()) {
+                        if(p.equals(player)) continue;
+                        p.showPlayer(plugin,player);
+                    }
+                    p.sendMessage("§aShowing all players now.");
+                    plugin.hidden_map.put(p.getUniqueId(), false);
+                }else{
+                    for (Player player : plugin.getServer().getOnlinePlayers()) {
+                        if(p.equals(player)) continue;
+                        if(player.hasPermission("lobbytools.bypass.hide")) continue;
+                        p.hidePlayer(plugin,player);
+                    }
+                    p.sendMessage("§aHiding all players now.");
+                    plugin.hidden_map.put(p.getUniqueId(), true);
+                }
                 break;
-            case NETHER_STAR:
+            } case NETHER_STAR:
                 p.openInventory(InventoryEvents.SERVER_SELECTOR);
                 break;
             default:

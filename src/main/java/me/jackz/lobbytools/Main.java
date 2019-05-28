@@ -9,11 +9,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 public final class Main extends JavaPlugin {
     private static InventoryEvents inventoryEvents;
+    public HashMap<UUID, Boolean> hidden_map = new HashMap<>();
     static World world;
     static File CONFIG_FILE;
+
+    /*todo:
+     parkour regions
+     player hider
+     gadgets
+
+     */
 
     @Override
     public void onEnable() {
