@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.io.IOException;
@@ -24,6 +25,36 @@ public class Commands implements CommandExecutor {
             return false;
         }
         switch(args[0].toLowerCase()) {
+            case "parkour":
+                if(sender instanceof Player) {
+                    Player p = (Player) sender;
+                    if(p.hasPermission("lobbytools.command.parkour")) {
+                        if(args.length < 2) {
+                            sender.sendMessage("§cUsage: /lobbytools parkour help");
+                            return true;
+                        }
+                        switch(args[1].toLowerCase()) {
+                            case "create":
+                            case "list":
+                            case "remove":
+                                p.sendMessage("§cNot Implemented");
+                                break;
+                            case "help":
+                                p.sendMessage("§6LobbyTools Parkour Regions" +
+                                        "\n§e/lt parkour create <name> [min y] §7- creates a region with spawnpoint at your feet" +
+                                        "\n§e/lt parkour list §7- list all parkour regions" +
+                                        "\n§e/lt parkour remove <name> §7- remove a certain region");
+                                break;
+                            default:
+                                p.sendMessage("§cUnknown parkour argument.  Try /lt parkour help");
+                        }
+                    }else{
+                        p.sendMessage("§cYou do not have permission to use this command.");
+                    }
+                }else{
+                    sender.sendMessage("§cYou must be a player to use this command.");
+                }
+                break;
             case "reload":
                 if(sender.hasPermission("lobbytools.reload")) {
                     try {

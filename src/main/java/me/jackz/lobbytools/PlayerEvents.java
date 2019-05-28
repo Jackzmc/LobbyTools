@@ -1,8 +1,17 @@
 package me.jackz.lobbytools;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
+import me.jackz.lobbytools.lib.ParkourRegion;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +21,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.List;
+
 public class PlayerEvents implements Listener {
+    private Main plugin;
     private final static Material[] PRESSURE_PLATES = {
             Material.STONE_PRESSURE_PLATE,
             Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
@@ -25,11 +37,25 @@ public class PlayerEvents implements Listener {
             Material.JUNGLE_PRESSURE_PLATE
     };
     private final Inventory GADGETS_MENU = Bukkit.createInventory(null,54,"§9Gadgets");
-    private int y_teleport;
-    private final Main plugin;
+    private int y_teleport = 0;
+    private List<ParkourRegion> parkourRegionList;
     PlayerEvents(Main plugin) {
         this.plugin = plugin;
         y_teleport = plugin.getConfig().getInt("y_spawn_teleport");
+        updateRegions();
+    }
+    public void updateRegions() {
+        ConfigurationSection parkours = plugin.getData().getConfigurationSection("parkour_regions");
+        if(parkours == null) return;
+        for (String key : parkours.getKeys(false)) {
+            Location loc = new Location(Main.world,parkours.getDouble("spawnpoint.X"),parkours.getDouble("spawnpoint.Y"),parkours.getDouble("spawnpoint.Z"));
+            ParkourRegion region = new ParkourRegion(key,loc);
+            region.setMinY(parkours.getInt("min_y"));
+
+            String fail_message = parkours.getString("fail_message");
+            region.setFailMessage(fail_message);
+            parkourRegionList.add(region);
+        }
     }
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
@@ -50,6 +76,22 @@ public class PlayerEvents implements Listener {
         }
         if(p.getLocation().getY() <= y_teleport) {
             p.teleport(Main.world.getSpawnLocation());
+        }
+
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(p.getLocation()));
+        for (ProtectedRegion region : set) {
+            for (ParkourRegion parkourRegion : parkourRegionList) {
+                if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
+                    //is parkour region
+                    if(p.getLocation().getY() < parkourRegion.getMinY()) {
+                        p.teleport(parkourRegion.getSpawnPoint());
+                        if(parkourRegion.hasFailMessage()) p.sendMessage(parkourRegion.getFailMessage());
+                    }
+                    break;
+                }
+            }
         }
     }
 
