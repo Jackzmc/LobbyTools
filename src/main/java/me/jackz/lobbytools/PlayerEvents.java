@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -73,7 +74,7 @@ public class PlayerEvents implements Listener {
                 if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
                     //is parkour region
                     if(p.getLocation().getY() < parkourRegion.getMinY()) {
-                        p.teleport(parkourRegion.getSpawnPoint());
+                        p.teleport(parkourRegion.getSpawnPoint(), PlayerTeleportEvent.TeleportCause.PLUGIN);
                         if(parkourRegion.hasFailMessage()) p.sendMessage(parkourRegion.getFailMessage());
                     }
                     break;

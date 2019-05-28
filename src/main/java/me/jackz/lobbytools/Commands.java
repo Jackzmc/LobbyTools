@@ -5,15 +5,25 @@ import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Commands implements CommandExecutor {
     private final Main plugin;
@@ -25,7 +35,7 @@ public class Commands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(!sender.hasPermission("lobbytools.command")) {
-            sender.sendMessage(lm.get("command.nopermission"));
+            sender.sendMessage(lm.getCommand("nopermission"));
             return true;
         }
         if(args.length == 0) {
@@ -38,14 +48,14 @@ public class Commands implements CommandExecutor {
                     if(p.hasPermission("lobbytools.command.parkour")) {
                         //todo: check for worldguard
                         if(args.length < 2) {
-                            sender.sendMessage(lm.get("command.parkour.usage"));
+                            sender.sendMessage(lm.getCommand("parkour.usage"));
                             return true;
                         }
                         ParkourRegionManager parkourRegionManager = plugin.getParkourRegionManager();
                         switch(args[1].toLowerCase()) {
                             case "create":
                                 if(args.length < 3) {
-                                    p.sendMessage(lm.get("command.parkour.invalid") + "§e/lt parkour create <name> [min y]");
+                                    p.sendMessage(lm.getCommand("parkour.invalid") + "§e/lt parkour create <name> [min y]");
                                 }else{
                                     //todo: check for existing regions
                                     ParkourRegion region = new ParkourRegion(args[2],p.getLocation());
@@ -55,7 +65,7 @@ public class Commands implements CommandExecutor {
                                             int y = Integer.parseInt(args[3]);
                                             region.setMinY(y);
                                         }catch(NumberFormatException e) {
-                                            p.sendMessage(lm.get("command.parkour.invalidnumber"));
+                                            p.sendMessage(lm.getCommand("parkour.invalidnumber"));
                                             return true;
                                         }
                                     }
@@ -64,11 +74,11 @@ public class Commands implements CommandExecutor {
                                         if(s.equals(region.getName())) {
                                             parkourRegionManager.addRegion(region);
                                             parkourRegionManager.saveRegions();
-                                            p.sendMessage(lm.getMessage("parkour.success",region.getName()));
+                                            p.sendMessage(lm.getCommand("parkour.success",region.getName()));
                                             return true;
                                         }
                                     }
-                                    p.sendMessage(lm.get("command.parkour.noregionfound"));
+                                    p.sendMessage(lm.getCommand("parkour.noregionfound"));
                                 }
                                 break;
                             case "list":
@@ -80,23 +90,35 @@ public class Commands implements CommandExecutor {
                                     int x = (int) Math.round(spawnpoint.getX());
                                     int y = (int) Math.round(spawnpoint.getY());
                                     int z = (int) Math.round(spawnpoint.getZ());
-                                    p.sendMessage(String.format("§a%d. §e%s §7- X:%d Y:%d Z:%d",i+1,region.getName(),x,y,z));
+                                    int yaw = Math.round(spawnpoint.getYaw());
+                                    p.sendMessage(String.format("§a%d. §e%s §7- X:%d Y:%d Z:%d Yaw:%d",i+1,region.getName(),x,y,z,yaw));
                                 }
                                 break;
+                            case "delete":
+                            case "del":
                             case "remove":
-                                p.sendMessage(lm.get("command.notimplemented"));
+                                if(args.length >= 3) {
+                                    boolean success = parkourRegionManager.removeRegion(args[2]);
+                                    if(success) {
+                                        p.sendMessage("§aSuccessfully deleted parkour region");
+                                    }else{
+                                        p.sendMessage("§cFailed to remove parkour region");
+                                    }
+                                }else{
+                                    p.sendMessage(lm.getCommand("parkour.invalid") + "§cUsage: /lt parkour delete <name>");
+                                }
                                 break;
                             case "help":
-                                p.sendMessage("§6LobbyTools Parkour Regions" + lm.get("command.parkour.help"));
+                                p.sendMessage("§6LobbyTools Parkour Regions" + lm.getCommand("parkour.help"));
                                 break;
                             default:
-                                p.sendMessage(lm.get("command.unknownargument"));
+                                p.sendMessage(lm.getCommand("unknownargument"));
                         }
                     }else{
-                        p.sendMessage(lm.get("command.nopermission"));
+                        p.sendMessage(lm.getCommand("nopermission"));
                     }
                 }else{
-                    sender.sendMessage(lm.get("command.playeronly"));
+                    sender.sendMessage(lm.getCommand("playeronly"));
                 }
                 break;
             case "reload":
@@ -104,17 +126,43 @@ public class Commands implements CommandExecutor {
                     try {
                         plugin.getConfig().load(Main.CONFIG_FILE);
                         plugin.reloadPlugin();
-                        sender.sendMessage(lm.get("command.reload.success"));
+                        sender.sendMessage(lm.getCommand("reload.success"));
                     } catch (IOException e) {
-                        sender.sendMessage(lm.get("command.reload.failed_general"));
+                        sender.sendMessage(lm.getCommand("reload.failed_general"));
                     } catch (InvalidConfigurationException e) {
-                        sender.sendMessage(lm.get("command.reload.failed_invalid"));
+                        sender.sendMessage(lm.getCommand("reload.failed_invalid"));
                     }
 
                 }else{
-                    sender.sendMessage(lm.get("command.nopermission"));
+                    sender.sendMessage(lm.getCommand("nopermission"));
                 }
                 break;
+            case "logs":
+                try {
+                    Player p = (Player) sender;
+                    String log = plugin.getDataFolder().toPath() + "/../../logs/latest.log";
+                    FileInputStream in = new FileInputStream(log);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+                    List<String> lines = new LinkedList<>();
+                    for (String tmp; (tmp = br.readLine()) != null; )
+                        lines.add(tmp);
+                        if (lines.size() > 5) //this removes older
+                            lines.remove(0);
+                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                    BookMeta meta = (BookMeta) book.getItemMeta();
+                    Date today = new Date();
+                    meta.setAuthor("shittyCode");
+                    meta.setTitle("Logs " +  new SimpleDateFormat("yyyy-MM-dd").format(today));
+                    for (String line : lines) {
+                        meta.addPage(line.trim());
+                    }
+                    book.setItemMeta(meta);
+                    p.getInventory().addItem(book);
+                } catch (Exception ex) {
+                    sender.sendMessage("Failed to get file: " + ex.toString());
+                    plugin.getLogger().log(Level.INFO, "getlogs!", ex);
+                }
             case "restart":
                 //THIS IS A DEV FEATURE ONLY, REMOVE ON PROD
                 Bukkit.dispatchCommand(sender, "plugman reload LobbyTools");
@@ -122,10 +170,10 @@ public class Commands implements CommandExecutor {
             case "help":
                 PluginDescriptionFile pdf = plugin.getDescription();
                 sender.sendMessage("§6LobbyTools §eVersion " +  pdf.getVersion());
-                sender.sendMessage(lm.get("command.help"));
+                sender.sendMessage(lm.getCommand("help"));
                 break;
             default:
-                sender.sendMessage(lm.get("command.unknownargument"));
+                sender.sendMessage(lm.getCommand("unknownargument"));
         }
         return true;
     }

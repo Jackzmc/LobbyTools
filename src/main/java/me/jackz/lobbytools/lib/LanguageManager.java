@@ -20,16 +20,15 @@ public class LanguageManager {
         loadMessages();
     }
     //todo: allow string.format()?
-    public String getMessage(String name, Object... arguments) {
-        return String.format(map.get(name),arguments);
+    public String getCommand(String name, Object... arguments) {
+        return String.format(map.get("command." + name),arguments);
     }
     public String get(String name,Object... arguments) {
-        return getMessage(name,arguments);
+        return String.format(map.get(name),arguments);
     }
     public void loadMessages() {
         FileConfiguration messages = YamlConfiguration.loadConfiguration(file);
         for (String key : messages.getKeys(true)) {
-            plugin.getLogger().info("KEY: " + key);
             String message = null;
             if(messages.isList(key)) {
                 message = StringUtils.join(messages.getList(key), '\n');

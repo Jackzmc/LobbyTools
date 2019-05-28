@@ -40,6 +40,11 @@ public final class Main extends JavaPlugin {
         setupData();
         //Only set to replace for now, while in development:
         saveResource("messages.yml",true);
+        String config_world = getConfig().getString("lobby_world");
+        if(config_world != null) world = Bukkit.getWorld(config_world);
+        if(world == null) world = Bukkit.getWorld("world");
+
+
         lm = new LanguageManager(this);
         parkourRegionManager = new ParkourRegionManager(this);
         inventoryEvents = new InventoryEvents(this);
@@ -50,8 +55,7 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EntityDamage(this),this);
         getServer().getPluginManager().registerEvents(playerEvents,this);
         getCommand("lobbytools").setExecutor(new Commands(this));
-        String config_world = getConfig().getString("lobby_world");
-        if(config_world != null) world = Bukkit.getWorld(config_world);
+
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
