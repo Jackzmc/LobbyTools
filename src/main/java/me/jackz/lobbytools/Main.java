@@ -1,5 +1,6 @@
 package me.jackz.lobbytools;
 
+import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -17,6 +18,8 @@ public final class Main extends JavaPlugin {
     private static InventoryEvents inventoryEvents;
     private static PlayerEvents playerEvents;
     private static ParkourRegionManager parkourRegionManager;
+    private static LanguageManager lm;
+
     HashMap<UUID, Boolean> hidden_map = new HashMap<>();
     public static World world;
     static File CONFIG_FILE;
@@ -35,6 +38,9 @@ public final class Main extends JavaPlugin {
         // Plugin startup logic
         setupConfig();
         setupData();
+        //Only set to replace for now, while in development:
+        saveResource("messages.yml",true);
+        lm = new LanguageManager(this);
         parkourRegionManager = new ParkourRegionManager(this);
         inventoryEvents = new InventoryEvents(this);
         playerEvents = new PlayerEvents(this);
@@ -52,6 +58,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         parkourRegionManager.saveRegions();
+
+        lm = null;
         inventoryEvents = null;
         playerEvents = null;
         world = null;
@@ -64,6 +72,7 @@ public final class Main extends JavaPlugin {
         if(config_world != null) world = Bukkit.getWorld(config_world);
         inventoryEvents.updateServers();
         //playerEvents.updateRegions();
+        lm.loadMessages();
         parkourRegionManager.loadRegions();
     }
 
@@ -83,6 +92,9 @@ public final class Main extends JavaPlugin {
     }
     public ParkourRegionManager getParkourRegionManager() {
         return parkourRegionManager;
+    }
+    public LanguageManager getLanguageManager() {
+        return lm;
     }
     private void setupConfig() {
         File configFile = new File (this.getDataFolder(), "config.yml");

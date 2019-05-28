@@ -1,5 +1,6 @@
 package me.jackz.lobbytools;
 
+import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Bukkit;
@@ -16,13 +17,15 @@ import java.util.List;
 
 public class Commands implements CommandExecutor {
     private final Main plugin;
+    private final LanguageManager lm;
     Commands(Main plugin) {
         this.plugin = plugin;
+        this.lm = plugin.getLanguageManager();
     }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(!sender.hasPermission("lobbytools.command")) {
-            sender.sendMessage("§cYou do not have permission to use this command.");
+            sender.sendMessage(lm.get("nopermission"));
             return true;
         }
         if(args.length == 0) {
@@ -42,7 +45,7 @@ public class Commands implements CommandExecutor {
                         switch(args[1].toLowerCase()) {
                             case "create":
                                 if(args.length < 3) {
-                                    p.sendMessage("§cInvalid usage. Usage: §e/lt parkour create <name> [min y]");
+                                    p.sendMessage(lm.get("parkour.invalid") + " §e/lt parkour create <name> [min y]");
                                 }else{
                                     //todo: check for existing regions
                                     ParkourRegion region = new ParkourRegion(args[2],p.getLocation());
@@ -61,7 +64,7 @@ public class Commands implements CommandExecutor {
                                         if(s.equals(region.getName())) {
                                             parkourRegionManager.addRegion(region);
                                             parkourRegionManager.saveRegions();
-                                            p.sendMessage("§aSuccessfully created parkour region named §e" + region.getName());
+                                            p.sendMessage(lm.getMessage("parkour.success",region.getName()));
                                             return true;
                                         }
                                     }
@@ -93,10 +96,10 @@ public class Commands implements CommandExecutor {
                                 p.sendMessage("§cUnknown parkour argument.  Try /lt parkour help");
                         }
                     }else{
-                        p.sendMessage("§cYou do not have permission to use this command.");
+                        p.sendMessage(lm.get("nopermission"));
                     }
                 }else{
-                    sender.sendMessage("§cYou must be a player to use this command.");
+                    sender.sendMessage(lm.get("playeronly"));
                 }
                 break;
             case "reload":
@@ -112,7 +115,7 @@ public class Commands implements CommandExecutor {
                     }
 
                 }else{
-                    sender.sendMessage("§cYou do not have permission to use this command");
+                    sender.sendMessage(lm.get("nopermission"));
                 }
                 break;
             case "restart":
@@ -124,7 +127,7 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage("§7Sorry, help is currently a work in progress.");
                 break;
             default:
-                sender.sendMessage("§cUnknown argument, try /lt help");
+                sender.sendMessage(lm.get("unknownargument"));
         }
         return true;
     }

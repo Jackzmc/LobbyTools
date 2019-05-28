@@ -1,0 +1,6 @@
+nopermission: "&cYou do not have permission to use this command."
+playeronly: "You must be a player to use this command."
+unknownargument: "&cUnknown argument, try /lt help"
+parkour:
+    success: "&aSuccessfully created parkour region named &e%s"
+    invalid: "&cInvalid usage. Usage:"
