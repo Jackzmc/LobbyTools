@@ -7,11 +7,10 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.jackz.lobbytools.lib.ParkourRegion;
+import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,26 +35,13 @@ public class PlayerEvents implements Listener {
             Material.ACACIA_PRESSURE_PLATE,
             Material.JUNGLE_PRESSURE_PLATE
     };
+    private static ParkourRegionManager parkourRegionManager;
     private final Inventory GADGETS_MENU = Bukkit.createInventory(null,54,"§9Gadgets");
     private int y_teleport = 0;
-    private List<ParkourRegion> parkourRegionList;
     PlayerEvents(Main plugin) {
         this.plugin = plugin;
         y_teleport = plugin.getConfig().getInt("y_spawn_teleport");
-        updateRegions();
-    }
-    public void updateRegions() {
-        ConfigurationSection parkours = plugin.getData().getConfigurationSection("parkour_regions");
-        if(parkours == null) return;
-        for (String key : parkours.getKeys(false)) {
-            Location loc = new Location(Main.world,parkours.getDouble("spawnpoint.X"),parkours.getDouble("spawnpoint.Y"),parkours.getDouble("spawnpoint.Z"));
-            ParkourRegion region = new ParkourRegion(key,loc);
-            region.setMinY(parkours.getInt("min_y"));
-
-            String fail_message = parkours.getString("fail_message");
-            region.setFailMessage(fail_message);
-            parkourRegionList.add(region);
-        }
+        parkourRegionManager = plugin.getParkourRegionManager();
     }
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
@@ -78,6 +64,7 @@ public class PlayerEvents implements Listener {
             p.teleport(Main.world.getSpawnLocation());
         }
 
+        List<ParkourRegion> parkourRegionList = parkourRegionManager.getRegions();
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
         ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(p.getLocation()));

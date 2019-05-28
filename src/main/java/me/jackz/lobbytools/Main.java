@@ -1,5 +1,6 @@
 package me.jackz.lobbytools;
 
+import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,8 +16,9 @@ import java.util.UUID;
 public final class Main extends JavaPlugin {
     private static InventoryEvents inventoryEvents;
     private static PlayerEvents playerEvents;
-    public HashMap<UUID, Boolean> hidden_map = new HashMap<>();
-    static World world;
+    private static ParkourRegionManager parkourRegionManager;
+    HashMap<UUID, Boolean> hidden_map = new HashMap<>();
+    public static World world;
     static File CONFIG_FILE;
 
     private FileConfiguration db;
@@ -33,6 +35,7 @@ public final class Main extends JavaPlugin {
         // Plugin startup logic
         setupConfig();
         setupData();
+        parkourRegionManager = new ParkourRegionManager(this);
         inventoryEvents = new InventoryEvents(this);
         playerEvents = new PlayerEvents(this);
         CONFIG_FILE = new File (this.getDataFolder(), "config.yml");
@@ -48,17 +51,20 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        parkourRegionManager.saveRegions();
         inventoryEvents = null;
         playerEvents = null;
         world = null;
         db = null;
+        parkourRegionManager = null;
         // Plugin shutdown logic
     }
     void reloadPlugin() {
         String config_world = getConfig().getString("lobby_world");
         if(config_world != null) world = Bukkit.getWorld(config_world);
         inventoryEvents.updateServers();
-        playerEvents.updateRegions();
+        //playerEvents.updateRegions();
+        parkourRegionManager.loadRegions();
     }
 
     private void setupData() {
@@ -72,8 +78,11 @@ public final class Main extends JavaPlugin {
             e.printStackTrace();
         }
     }
-    FileConfiguration getData() {
+    public FileConfiguration getData() {
         return db;
+    }
+    public ParkourRegionManager getParkourRegionManager() {
+        return parkourRegionManager;
     }
     private void setupConfig() {
         File configFile = new File (this.getDataFolder(), "config.yml");
