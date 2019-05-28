@@ -23,6 +23,8 @@ public class JoinEvent implements Listener {
             p.getInventory().clear();
             p.getInventory().setItem(1,Util.getNamedItem(Material.CLOCK,"§6Player Hider","§7Toggle hiding players"));
             p.getInventory().setItem(4,Util.getNamedItem(Material.NETHER_STAR,"§6Server Selector","§7Select a server"));
+            p.getInventory().setItem(8,Util.getNamedItem(Material.CHEST,"§6Gadgets","§7Fun toys for all"));
+            //temp. measure to stop saturation issues:
             p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 999,1,true));
             if(!plugin.hidden_map.containsKey(p.getUniqueId())) plugin.hidden_map.put(p.getUniqueId(),false);
         }

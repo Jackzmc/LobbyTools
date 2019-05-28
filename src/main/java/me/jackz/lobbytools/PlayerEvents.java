@@ -1,5 +1,6 @@
 package me.jackz.lobbytools;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -7,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -22,6 +24,7 @@ public class PlayerEvents implements Listener {
             Material.ACACIA_PRESSURE_PLATE,
             Material.JUNGLE_PRESSURE_PLATE
     };
+    private final Inventory GADGETS_MENU = Bukkit.createInventory(null,54,"§9Gadgets");
     private int y_teleport;
     private final Main plugin;
     PlayerEvents(Main plugin) {
@@ -79,6 +82,9 @@ public class PlayerEvents implements Listener {
                     p.sendMessage("§aHiding all players now.");
                     plugin.hidden_map.put(p.getUniqueId(), true);
                 }
+                break;
+            }case CHEST: {
+                p.openInventory(GADGETS_MENU);
                 break;
             } case NETHER_STAR:
                 p.openInventory(InventoryEvents.SERVER_SELECTOR);
