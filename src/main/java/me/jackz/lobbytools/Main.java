@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -14,7 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public final class Main extends JavaPlugin {
+public class Main extends JavaPlugin {
+    public static Plugin plugin;
     private static InventoryEvents inventoryEvents;
     private static PlayerEvents playerEvents;
     private static ParkourRegionManager parkourRegionManager;
@@ -35,6 +37,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        plugin = this;
         // Plugin startup logic
         setupConfig();
         setupData();
@@ -57,6 +60,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        plugin = null;
         parkourRegionManager.saveRegions();
 
         lm = null;
