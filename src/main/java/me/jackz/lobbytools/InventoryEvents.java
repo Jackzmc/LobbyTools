@@ -2,7 +2,7 @@ package me.jackz.lobbytools;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import de.tr7zw.itemnbtapi.ItemNBTAPI;
+import de.tr7zw.itemnbtapi.NBTContainer;
 import de.tr7zw.itemnbtapi.NBTItem;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -56,11 +56,11 @@ class InventoryEvents implements Listener {
                 break;
             }
             if(slot >= SERVER_SELECTOR.getMaxStackSize()) break; //todo: allow new pages
-
             ItemStack itemstack = Util.getNamedItem(material, ChatColor.GOLD + name,lore);
-            NBTItem nbt = ItemNBTAPI.getNBTItem(itemstack);
+            NBTContainer nbt = NBTItem.convertItemtoNBT(itemstack);
+
             nbt.setString("server",key);
-            SERVER_SELECTOR.setItem(slot,nbt.getItem());
+            SERVER_SELECTOR.setItem(slot,NBTItem.convertNBTtoItem(nbt));
             if(slot == 24 || slot == 16 || slot == 34) {
                 slot+=2;
             }
@@ -82,7 +82,7 @@ class InventoryEvents implements Listener {
             e.setCancelled(true);
             ItemStack item = e.getCurrentItem();
             if(item == null || !item.hasItemMeta()) return;
-            NBTItem nbt = ItemNBTAPI.getNBTItem(item);
+            NBTContainer nbt = NBTItem.convertItemtoNBT(item);
             if(nbt.hasKey("server")) {
                 for(String server : server_ids) {
                     if (nbt.getString("server").equalsIgnoreCase(server)) {

@@ -11,6 +11,8 @@ import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +20,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -95,12 +99,14 @@ class PlayerEvents implements Listener {
         }
         switch (item.getType()) {
             case CLOCK: {
+                Enchantment enchantment = EnchantmentWrapper.PROTECTION_FALL;
                 boolean is_hidden = plugin.hidden_map.getOrDefault(p.getUniqueId(), false);
                 if(is_hidden) {
                     for (Player player : plugin.getServer().getOnlinePlayers()) {
                         if(p.equals(player)) continue;
                         p.showPlayer(plugin,player);
                     }
+                    item.removeEnchantment(enchantment);
                     p.sendMessage("§aShowing all players now.");
                     plugin.hidden_map.put(p.getUniqueId(), false);
                 }else{
@@ -109,6 +115,10 @@ class PlayerEvents implements Listener {
                         if(player.hasPermission("lobbytools.bypass.hide")) continue;
                         p.hidePlayer(plugin,player);
                     }
+                    ItemMeta meta = item.getItemMeta();
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    item.setItemMeta(meta);
+                    item.addUnsafeEnchantment(enchantment,1);
                     p.sendMessage("§aHiding all players now.");
                     plugin.hidden_map.put(p.getUniqueId(), true);
                 }
