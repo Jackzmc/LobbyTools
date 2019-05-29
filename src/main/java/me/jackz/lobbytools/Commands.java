@@ -42,6 +42,7 @@ class Commands implements CommandExecutor {
             return false;
         }
         switch(args[0].toLowerCase()) {
+            case "pk":
             case "parkour":
                 if(sender instanceof Player) {
                     Player p = (Player) sender;
@@ -152,6 +153,7 @@ class Commands implements CommandExecutor {
                     ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
                     BookMeta meta = (BookMeta) book.getItemMeta();
                     Date today = new Date();
+                    assert meta != null;
                     meta.setAuthor("shittyCode");
                     meta.setTitle("Logs " +  new SimpleDateFormat("yyyy-MM-dd").format(today));
                     for (String line : lines) {
@@ -163,6 +165,7 @@ class Commands implements CommandExecutor {
                     sender.sendMessage("Failed to get file: " + ex.toString());
                     plugin.getLogger().log(Level.INFO, "getlogs!", ex);
                 }
+                break;
             case "restart":
                 //THIS IS A DEV FEATURE ONLY, REMOVE ON PROD
                 Bukkit.dispatchCommand(sender, "plugman reload LobbyTools");
