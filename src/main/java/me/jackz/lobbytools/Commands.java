@@ -65,7 +65,7 @@ class Commands implements CommandExecutor {
                                             int y = Integer.parseInt(args[3]);
                                             region.setMinY(y);
                                         }catch(NumberFormatException e) {
-                                            p.sendMessage(lm.getCommand("parkour.invalidnumber"));
+                                            p.sendMessage(lm.getCommand("parkour.create.invalidnumber"));
                                             return true;
                                         }
                                     }
@@ -74,11 +74,11 @@ class Commands implements CommandExecutor {
                                         if(s.equals(region.getName())) {
                                             parkourRegionManager.addRegion(region);
                                             parkourRegionManager.saveRegions();
-                                            p.sendMessage(lm.getCommand("parkour.success",region.getName()));
+                                            p.sendMessage(lm.getCommand("parkour.create.success",region.getName()));
                                             return true;
                                         }
                                     }
-                                    p.sendMessage(lm.getCommand("parkour.noregionfound"));
+                                    p.sendMessage(lm.getCommand("parkour.create.noregionfound"));
                                 }
                                 break;
                             case "list":
@@ -100,9 +100,9 @@ class Commands implements CommandExecutor {
                                 if(args.length >= 3) {
                                     boolean success = parkourRegionManager.removeRegion(args[2]);
                                     if(success) {
-                                        p.sendMessage("§aSuccessfully deleted parkour region");
+                                        p.sendMessage(lm.getCommand("parkour.delete.success"));
                                     }else{
-                                        p.sendMessage("§cFailed to remove parkour region");
+                                        p.sendMessage(lm.getCommand("parkour.delete.failed"));
                                     }
                                 }else{
                                     p.sendMessage(lm.getCommand("parkour.invalid") + "§cUsage: /lt parkour delete <name>");

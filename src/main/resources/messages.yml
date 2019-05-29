@@ -11,11 +11,16 @@ command:
             - "&e/lt parkour create <name> [min y] &7- creates a region with spawnpoint at your feet"
             - "&e/lt parkour list &7- list all parkour regions"
             - "&e/lt parkour remove <name> &7- remove a certain region"
+        delete:
+            success: "&aSuccessfully deleted parkour region"
+            failed: "&cFailed to remove parkour region"
+        create:
+            success: "&aSuccessfully created parkour region named &e%s"
+            invalidnumber: "&cInvalid minimum Y-Level. Please use a whole number"
+            noregionfound: "&cCould not create parkour region: No WorldGuard regions found at your location"
         usage: "&cUsage: /lobbytools parkour help"
-        success: "&aSuccessfully created parkour region named &e%s"
         invalid: "&cInvalid usage. Usage:"
-        invalidnumber: "&cInvalid minimum Y-Level. Please use a whole number"
-        noregionfound: "&cCould not create parkour region: No WorldGuard regions found at your location"
+
         unknownargument: "&cUnknown parkour argument. Try /lt parkour help"
     reload:
         success: "&aSuccessfully reloaded configuration."
