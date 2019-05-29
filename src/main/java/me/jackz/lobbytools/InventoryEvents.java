@@ -2,8 +2,6 @@ package me.jackz.lobbytools;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import de.tr7zw.itemnbtapi.NBTContainer;
-import de.tr7zw.itemnbtapi.NBTItem;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,11 +54,10 @@ class InventoryEvents implements Listener {
                 break;
             }
             if(slot >= SERVER_SELECTOR.getMaxStackSize()) break; //todo: allow new pages
+            lore.add("§7Server:"+key);
             ItemStack itemstack = Util.getNamedItem(material, ChatColor.GOLD + name,lore);
-            NBTContainer nbt = NBTItem.convertItemtoNBT(itemstack);
 
-            nbt.setString("server",key);
-            SERVER_SELECTOR.setItem(slot,NBTItem.convertNBTtoItem(nbt));
+            SERVER_SELECTOR.setItem(slot,itemstack);
             if(slot == 24 || slot == 16 || slot == 34) {
                 slot+=2;
             }
@@ -82,10 +79,13 @@ class InventoryEvents implements Listener {
             e.setCancelled(true);
             ItemStack item = e.getCurrentItem();
             if(item == null || !item.hasItemMeta()) return;
-            NBTContainer nbt = NBTItem.convertItemtoNBT(item);
-            if(nbt.hasKey("server")) {
+            List<String> lores = item.getItemMeta().getLore();
+            String last_value = ChatColor.stripColor(lores.get(lores.size()-1));
+            if(last_value.toLowerCase().startsWith("server")) {
+                String lore_server = last_value.split(":")[1];
                 for(String server : server_ids) {
-                    if (nbt.getString("server").equalsIgnoreCase(server)) {
+                    plugin.getLogger().info(lore_server + " : " + server);
+                    if(lore_server.equals(server)) {
                         p.sendMessage("§aTeleporting you to §e" + server);
                         ByteArrayDataOutput out = ByteStreams.newDataOutput();
                         out.writeUTF("Connect");
@@ -95,10 +95,9 @@ class InventoryEvents implements Listener {
                         return;
                     }
                 }
-                p.sendMessage("§cSorry, but that server is not configured correctly.");
-                view.close();
             }
-            return;
+            p.sendMessage("§cSorry, but that server is not configured correctly.");
+            view.close();
         }
         if(!p.hasPermission("lobbytools.bypass.inventory")) {
             e.setCancelled(true);
