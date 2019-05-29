@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class JoinEvent implements Listener {
+class JoinEvent implements Listener {
     private final Main plugin;
 
     JoinEvent(Main plugin) {

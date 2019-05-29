@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class Commands implements CommandExecutor {
+class Commands implements CommandExecutor {
     private final Main plugin;
     private final LanguageManager lm;
     Commands(Main plugin) {

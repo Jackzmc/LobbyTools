@@ -13,7 +13,7 @@ import java.util.List;
 /** A manager to create parkour regions and save/load them with ease
  *
  */
-public class ParkourRegionManager {
+public final class ParkourRegionManager {
     private final Main plugin;
     private List<ParkourRegion> regions = new ArrayList<>();
 

@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class EntityDamage implements Listener {
+class EntityDamage implements Listener {
     private final Main plugin;
     EntityDamage(Main plugin) {this.plugin = plugin;}
 

@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.HashMap;
 
-public class LanguageManager {
+public final class LanguageManager {
     private final Main plugin;
     private final File file;
     private final HashMap<String,String> map = new HashMap<>();

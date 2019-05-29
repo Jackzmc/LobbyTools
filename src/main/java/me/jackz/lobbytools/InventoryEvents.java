@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Set;
 
-public class InventoryEvents implements Listener {
+class InventoryEvents implements Listener {
     private final Main plugin;
     final static Inventory SERVER_SELECTOR = Bukkit.createInventory(null,54,"§6Lobby Selector");
     private Set<String> server_ids;

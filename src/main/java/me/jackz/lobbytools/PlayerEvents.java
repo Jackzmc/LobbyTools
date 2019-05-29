@@ -23,7 +23,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-public class PlayerEvents implements Listener {
+class PlayerEvents implements Listener {
     private Main plugin;
     private final static Material[] PRESSURE_PLATES = {
             Material.STONE_PRESSURE_PLATE,
