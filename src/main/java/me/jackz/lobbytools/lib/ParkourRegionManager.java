@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /** A manager to create parkour regions and save/load them with ease
@@ -87,6 +88,23 @@ public final class ParkourRegionManager {
             db.set(section + "spawnpoint.yaw",(double)spawnpoint.getYaw());
             db.set(section + "min_y",region.getMinY());
             db.set(section + "fail_message",region.getFailMessage());
+            HashMap<Integer, Location> checkpoints = region.getCheckpoints();
+//            for(Location checkpoint : checkpoints) {
+//                String sec = section + ".checkpoints." + checkpoint;
+//
+//                db.set()
+//            }
+//            ConfigurationSection checkpoints_section = parkours.getConfigurationSection(key + ".checkpoints");
+//            if(checkpoints_section != null) {
+//                for(String checkpoint_name : checkpoints_section.getKeys(false)) {
+//                    double x = checkpoints_section.getDouble(checkpoint_name+".x");
+//                    double y = checkpoints_section.getDouble(checkpoint_name+".y");
+//                    double z = checkpoints_section.getDouble(checkpoint_name+".z");
+//                    float yaw = (float)checkpoints_section.getDouble(checkpoint_name+".yaw");
+//                    checkpoints.add(new Location(Main.world,x,y,z,yaw,0));
+//                }
+//            }
+
         }
         plugin.getLogger().info("Saving " + regions.size() + " regions");
         try {
@@ -104,11 +122,26 @@ public final class ParkourRegionManager {
         ConfigurationSection parkours = plugin.getData().getConfigurationSection("parkour_regions");
         if(parkours == null) return;
         for (String key : parkours.getKeys(false)) {
-            plugin.getLogger().info("f: " + parkours.getDouble(key+".spawnpoint.yaw"));
             Location loc = new Location(Main.world,parkours.getDouble(key + ".spawnpoint.x"),parkours.getDouble(key+".spawnpoint.y"),parkours.getDouble(key+".spawnpoint.z"));
             loc.setYaw((float) parkours.getDouble(key+".spawnpoint.yaw"));
+
+            HashMap<Integer,Location> checkpoints = new HashMap<>();
+            ConfigurationSection checkpoints_section = parkours.getConfigurationSection(key + ".checkpoints");
+            /*if(checkpoints_section != null) {
+                for(String checkpoint_name : checkpoints_section.getKeys(false)) {
+                    double x = checkpoints_section.getDouble(checkpoint_name+".x");
+                    double y = checkpoints_section.getDouble(checkpoint_name+".y");
+                    double z = checkpoints_section.getDouble(checkpoint_name+".z");
+                    float yaw = (float)checkpoints_section.getDouble(checkpoint_name+".yaw");
+                    checkpoints.add(new Location(Main.world,x,y,z,yaw,0));
+                }
+            }*/
+
             ParkourRegion region = new ParkourRegion(key,loc);
+            region.setCheckpoints(checkpoints);
             region.setMinY(parkours.getInt(key+".min_y"));
+
+
 
             String fail_message = parkours.getString(key+".fail_message");
             region.setFailMessage(fail_message);
