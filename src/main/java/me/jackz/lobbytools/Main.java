@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -26,9 +27,10 @@ public final class Main extends JavaPlugin {
 
     private FileConfiguration db;
 
+    static boolean TTA_ENABLED = false;
+
     /*todo:
      parkour regions
-     player hider
      gadgets
 
      */
@@ -55,8 +57,14 @@ public final class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EntityDamage(this),this);
         getServer().getPluginManager().registerEvents(playerEvents,this);
         getCommand("lobbytools").setExecutor(new Commands(this));
-
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+        Plugin TTA = getServer().getPluginManager().getPlugin("TTA");
+        if(TTA != null && TTA.isEnabled()) {
+            TTA_ENABLED = true;
+        }else{
+            getLogger().warning("TTA not found, join titles & actionbar is disabled.");
+        }
     }
 
     @Override
@@ -109,7 +117,9 @@ public final class Main extends JavaPlugin {
         config.addDefault("launchpad_enabled",true);
         config.addDefault("y_spawn_teleport",0);
         config.addDefault("parkour_regions",new ArrayList<String>());
-
+        config.addDefault("messages.title","Welcome to the Server!");
+        config.addDefault("messages.subtitle","");
+        config.addDefault("messages.actionbar","");
         config.options().copyDefaults(true);
         try {
             config.save(configFile);

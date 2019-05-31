@@ -67,6 +67,10 @@
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
+        <repository>
+            <id>tta-repo</id>
+            <url>http://releases.herbystar.eu</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -83,7 +87,12 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>de.Herbystar</groupId>
+            <artifactId>TTA</artifactId>
+            <version>3.6</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

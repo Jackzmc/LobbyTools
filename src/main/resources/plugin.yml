@@ -3,7 +3,7 @@ version: ${project.version}
 main: me.jackz.lobbytools.Main
 api-version: 1.14
 load: STARTUP
-softdepend: [WorldGuard]
+softdepend: [WorldGuard,TTA]
 depend: []
 commands:
   lobbytools:

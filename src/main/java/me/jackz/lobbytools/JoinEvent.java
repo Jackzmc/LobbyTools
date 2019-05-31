@@ -1,5 +1,6 @@
 package me.jackz.lobbytools;
 
+import de.Herbystar.TTA.TTA_Methods;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,7 +20,6 @@ class JoinEvent implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         setupPlayer(e.getPlayer());
-
     }
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
@@ -36,6 +36,13 @@ class JoinEvent implements Listener {
             p.getInventory().setItem(1,Util.getNamedItem(Material.CLOCK,"§6Player Hider","§7Toggle hiding players"));
             p.getInventory().setItem(4,Util.getNamedItem(Material.NETHER_STAR,"§6Server Selector","§7Select a server"));
             p.getInventory().setItem(7,Util.getNamedItem(Material.CHEST,"§6Gadgets","§7Fun toys for all"));
+            if(Main.TTA_ENABLED) {
+                String title = plugin.getConfig().getString("messages.title");
+                String subtitle = plugin.getConfig().getString("messages.subtitle");
+                String actionbar = plugin.getConfig().getString("messages.actionbar");
+                TTA_Methods.sendTitle(p, title, 0, 40, 0, subtitle, 0, 0, 0);
+                TTA_Methods.sendActionBar(p, actionbar);
+            }
             //temp. measure to stop saturation issues:
             p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 999,1,true));
             if(!plugin.hidden_map.containsKey(p.getUniqueId())) plugin.hidden_map.put(p.getUniqueId(),false);
