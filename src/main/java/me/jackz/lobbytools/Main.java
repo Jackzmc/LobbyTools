@@ -88,11 +88,15 @@ public final class Main extends JavaPlugin {
 
     private boolean setupEconomy()
     {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            ECONOMY = economyProvider.getProvider();
+        try {
+            RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
+            if (economyProvider != null) {
+                ECONOMY = economyProvider.getProvider();
+            }
+            return (ECONOMY != null);
+        }catch(NoClassDefFoundError ignored) {
+            return false;
         }
-        return (ECONOMY != null);
     }
     private static void registerEvents(org.bukkit.plugin.Plugin plugin, Listener... listeners) {
         for (Listener listener : listeners) {
