@@ -28,7 +28,7 @@ This plugin will run fine without any other plugins, but some functionality will
 ## Commands
 
 Main: /lobbytools, /lt, /lb
-* **/lt help** - self-explanitory
+* **/lt help** - self-explanatory
 * **/lt parkour** <create/list/remove> - creates parkour regions
 * **/lt reload** - reloads the config.yml
 
@@ -37,6 +37,7 @@ Main: /lobbytools, /lt, /lb
 * lobbytools.command - access to /lobbytools
 * lobbytools.command.reload - access to /lt reload
 * lobbytools.command.parkour - access to /lt parkour
+* lobbytools.lobby.flight - enable flight in lobby
 * lobbytools.bypass.lobby - bypass lobby join actions (clearing inventory, etc)
 * lobbytools.bypass.inventory - bypass lobby items (anti-item movement, etc)
 * lobbytools.bypass.hide - players with this permission cant be hidden

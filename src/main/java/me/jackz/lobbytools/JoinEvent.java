@@ -48,6 +48,10 @@ class JoinEvent implements Listener {
             //temp. measure to stop saturation issues:
             p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 999,1,true));
             if(!plugin.hidden_map.containsKey(p.getUniqueId())) plugin.hidden_map.put(p.getUniqueId(),false);
+
+            if(p.hasPermission("lobbytools.lobby.flight")) {
+            	p.setAllowFlight(true);
+            }
         }
     }
 
