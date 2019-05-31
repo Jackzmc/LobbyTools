@@ -20,7 +20,7 @@ command:
             noregionfound: "&cCould not create parkour region: No WorldGuard regions found at your location"
         usage: "&cUsage: /lobbytools parkour help"
         invalid: "&cInvalid usage. Usage:"
-
+        worldguard_not_enabled: "&cWorldGuard is not enabled, and is needed for Parkour Regions"
         unknownargument: "&cUnknown parkour argument. Try /lt parkour help"
     reload:
         success: "&aSuccessfully reloaded configuration."

@@ -32,6 +32,7 @@ class Commands implements CommandExecutor {
         this.plugin = plugin;
         this.lm = plugin.getLanguageManager();
     }
+    @SuppressWarnings("NullableProblems")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(!sender.hasPermission("lobbytools.command")) {
@@ -47,7 +48,10 @@ class Commands implements CommandExecutor {
                 if(sender instanceof Player) {
                     Player p = (Player) sender;
                     if(p.hasPermission("lobbytools.command.parkour")) {
-                        //todo: check for worldguard
+                        if(!plugin.isPluginEnabled("WorldGuard")) {
+                            sender.sendMessage(lm.getCommand("parkour.worldguard_not_enabled"));
+                            return true;
+                        }
                         if(args.length < 2) {
                             sender.sendMessage(lm.getCommand("parkour.usage"));
                             return true;

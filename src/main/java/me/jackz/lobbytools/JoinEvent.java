@@ -40,7 +40,7 @@ class JoinEvent implements Listener {
             String title = plugin.getConfig().getString("messages.title");
             String subtitle = plugin.getConfig().getString("messages.subtitle");
             p.sendTitle(title,subtitle,0,20,0);
-            if(plugin.isTTAEnabled()) {
+            if(plugin.isPluginEnabled("TTA")) {
                 String actionbar = plugin.getConfig().getString("messages.actionbar");
                 TTA_Methods.sendActionBar(p, actionbar);
             }

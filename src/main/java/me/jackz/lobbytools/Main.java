@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -51,21 +52,21 @@ public final class Main extends JavaPlugin {
         loadManagersAndEvents();
 
         //register events
-        getServer().getPluginManager().registerEvents(new JoinEvent(this),this);
-        getServer().getPluginManager().registerEvents(inventoryEvents,this);
-        getServer().getPluginManager().registerEvents(new EntityDamage(this),this);
-        getServer().getPluginManager().registerEvents(playerEvents,this);
-
+        registerEvents(this,
+                new JoinEvent(this),
+                new EntityDamage(this),
+                inventoryEvents,
+                playerEvents
+        );
         //register commands
+        //noinspection ConstantConditions
         getCommand("lobbytools").setExecutor(new Commands(this));
         //register for bungeecoord channel, for server changing
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         //check for TTA, and warn player if failed
-        if(!isTTAEnabled()) {
-            getLogger().warning("TTA not found, join action bar messages will be disabled");
-
-        }
+        if(!isPluginEnabled("TTA")) getLogger().warning("TTA not found, join action bar messages will be disabled");
+        if(!isPluginEnabled("WorldGuard")) getLogger().warning("WorldGuard not found, parkour regions feature will be disabled");
     }
     void reloadPlugin() {
         String config_world = getConfig().getString("lobby_world");
@@ -89,17 +90,20 @@ public final class Main extends JavaPlugin {
         parkourRegionManager = null;
         // Plugin shutdown logic
     }
-
+    private static void registerEvents(org.bukkit.plugin.Plugin plugin, Listener... listeners) {
+        for (Listener listener : listeners) {
+            Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
+        }
+    }
     private void loadManagersAndEvents() {
         lm = new LanguageManager(this);
         parkourRegionManager = new ParkourRegionManager(this);
         inventoryEvents = new InventoryEvents(this);
         playerEvents = new PlayerEvents(this);
     }
-
-    boolean isTTAEnabled() {
-        Plugin TTA = getServer().getPluginManager().getPlugin("TTA");
-        return TTA != null && TTA.isEnabled();
+    boolean isPluginEnabled(String plugin_name) {
+        Plugin plugin = getServer().getPluginManager().getPlugin(plugin_name);
+        return plugin != null && plugin.isEnabled();
     }
 
     private void setupConfig() {
@@ -137,10 +141,10 @@ public final class Main extends JavaPlugin {
     public FileConfiguration getData() {
         return db;
     }
-    public ParkourRegionManager getParkourRegionManager() {
+    ParkourRegionManager getParkourRegionManager() {
         return parkourRegionManager;
     }
-    public LanguageManager getLanguageManager() {
+    LanguageManager getLanguageManager() {
         return lm;
     }
 
