@@ -63,7 +63,7 @@ public final class Main extends JavaPlugin {
         if(TTA != null && TTA.isEnabled()) {
             TTA_ENABLED = true;
         }else{
-            getLogger().warning("TTA not found, join titles & actionbar is disabled.");
+            getLogger().warning("TTA not found, join action bar messages will be disabled");
         }
     }
 
