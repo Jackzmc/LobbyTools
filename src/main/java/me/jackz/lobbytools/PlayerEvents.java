@@ -8,7 +8,6 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -19,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,13 +39,14 @@ class PlayerEvents implements Listener {
             Material.JUNGLE_PRESSURE_PLATE
     };
     private static ParkourRegionManager parkourRegionManager;
-    private final Inventory GADGETS_MENU = Bukkit.createInventory(null,54,"§9Gadgets");
     private int y_teleport = 0;
     PlayerEvents(Main plugin) {
         this.plugin = plugin;
         y_teleport = plugin.getConfig().getInt("y_spawn_teleport");
         parkourRegionManager = plugin.getParkourRegionManager();
     }
+
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
@@ -124,7 +123,7 @@ class PlayerEvents implements Listener {
                 }
                 break;
             }case CHEST: {
-                p.openInventory(GADGETS_MENU);
+                p.openInventory(InventoryEvents.GADGETS_MENU);
                 break;
             } case NETHER_STAR:
                 p.openInventory(InventoryEvents.SERVER_SELECTOR);

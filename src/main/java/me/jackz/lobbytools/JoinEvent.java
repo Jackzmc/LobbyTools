@@ -44,6 +44,7 @@ class JoinEvent implements Listener {
                 String actionbar = plugin.getConfig().getString("messages.actionbar");
                 TTA_Methods.sendActionBar(p, actionbar);
             }
+            //todo: add bossbar ?
             //temp. measure to stop saturation issues:
             p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 999,1,true));
             if(!plugin.hidden_map.containsKey(p.getUniqueId())) plugin.hidden_map.put(p.getUniqueId(),false);

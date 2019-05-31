@@ -2,9 +2,11 @@ package me.jackz.lobbytools;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.jackz.lobbytools.lib.LanguageManager;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -16,19 +18,28 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.List;
 import java.util.Set;
 
 class InventoryEvents implements Listener {
     private final Main plugin;
-    final static Inventory SERVER_SELECTOR = Bukkit.createInventory(null,54,"§6Lobby Selector");
+    private final LanguageManager lm;
+
+    private final static String SERVER_SELECTOR_NAME =  "§6Server Selector";
+    private final static String GADGETS_MENU_NAME = "§9Gadgets Menu";
+
+    final static Inventory SERVER_SELECTOR = Bukkit.createInventory(null,54,SERVER_SELECTOR_NAME);
+    final static Inventory GADGETS_MENU = Bukkit.createInventory(null,54,GADGETS_MENU_NAME);
     private Set<String> server_ids;
     InventoryEvents(Main plugin) {
         this.plugin = plugin;
-        updateServers();
+        this.lm = plugin.getLanguageManager();
+        updateInventories();
     }
-    void updateServers() {
+    void updateInventories() {
+        //server selector
         SERVER_SELECTOR.clear();
         ConfigurationSection sec = plugin.getConfig().getConfigurationSection("servers");
         if(sec == null) {
@@ -61,7 +72,17 @@ class InventoryEvents implements Listener {
             if(slot == 24 || slot == 16 || slot == 34) {
                 slot+=2;
             }
+            //gadgets
+            populateGadgetsMenu();
         }
+    }
+    private void populateGadgetsMenu() {
+        ItemStack djump_boots = Util.getNamedItem(Material.LEATHER_BOOTS,"§9Double Jump","§7Allows you to jump double the height");
+        LeatherArmorMeta djump_boots_meta = (LeatherArmorMeta) djump_boots.getItemMeta();
+        djump_boots_meta.setColor(Color.GREEN);
+        djump_boots.setItemMeta(djump_boots_meta);
+
+        GADGETS_MENU.setItem(10,djump_boots);
     }
 
     @EventHandler
@@ -75,9 +96,10 @@ class InventoryEvents implements Listener {
     public void onItemClick(InventoryClickEvent e) {
         InventoryView view = e.getView();
         Player p = (Player) e.getWhoClicked();
-        if(view.getTitle().equalsIgnoreCase("§6Lobby Selector")) {
+        ItemStack item = e.getCurrentItem();
+
+        if(view.getTitle().equalsIgnoreCase(SERVER_SELECTOR_NAME)) {
             e.setCancelled(true);
-            ItemStack item = e.getCurrentItem();
             if(item == null || !item.hasItemMeta()) return;
             List<String> lores = item.getItemMeta().getLore();
             String last_value = ChatColor.stripColor(lores.get(lores.size()-1));
@@ -86,7 +108,7 @@ class InventoryEvents implements Listener {
                 for(String server : server_ids) {
                     plugin.getLogger().info(lore_server + " : " + server);
                     if(lore_server.equals(server)) {
-                        p.sendMessage("§aTeleporting you to §e" + server);
+                        p.sendMessage(lm.get("teleport_to_server",server));
                         ByteArrayDataOutput out = ByteStreams.newDataOutput();
                         out.writeUTF("Connect");
                         out.writeUTF(server);
@@ -96,9 +118,27 @@ class InventoryEvents implements Listener {
                     }
                 }
             }
+            p.sendMessage(lm.get("server_incorrect_format"));
             p.sendMessage("§cSorry, but that server is not configured correctly.");
             view.close();
+        }else if(view.getTitle().equalsIgnoreCase(GADGETS_MENU_NAME)) {
+            e.setCancelled(true);
+            //p.sendMessage("§cSorry, but gadgets aren't implemented yet.");
+            if(item == null || !item.hasItemMeta()) return;
+            switch(item.getType()) {
+                case LEATHER_BOOTS:
+                    //possibly set global hashmap of current gadget
+                    ItemStack djump_boots = Util.getNamedItem(Material.LEATHER_BOOTS,"§9Double Jump","§7Allows you to jump double the height");
+                    LeatherArmorMeta djump_boots_meta = (LeatherArmorMeta) djump_boots.getItemMeta();
+                    djump_boots_meta.setColor(Color.GREEN);
+                    djump_boots.setItemMeta(djump_boots_meta);
+                    e.setCurrentItem(djump_boots);
+                    break;
+                default:
+                    p.sendMessage(lm.get("incorrect_gadget"));
+            }
         }
+
         if(!p.hasPermission("lobbytools.bypass.inventory")) {
             e.setCancelled(true);
         }

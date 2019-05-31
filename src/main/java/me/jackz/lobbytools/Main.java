@@ -71,7 +71,7 @@ public final class Main extends JavaPlugin {
     void reloadPlugin() {
         String config_world = getConfig().getString("lobby_world");
         if(config_world != null) world = Bukkit.getWorld(config_world);
-        inventoryEvents.updateServers();
+        inventoryEvents.updateInventories();
         //playerEvents.updateRegions();
         lm.loadMessages();
         parkourRegionManager.loadRegions();
