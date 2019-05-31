@@ -52,6 +52,7 @@ class JoinEvent implements Listener {
             if(p.hasPermission("lobbytools.lobby.flight")) {
             	p.setAllowFlight(true);
             }
+            p.teleport(Main.world.getSpawnLocation());
         }
     }
 
