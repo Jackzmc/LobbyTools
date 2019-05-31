@@ -15,6 +15,9 @@ Please be patient. If you want a feature, please make a github issue asking for 
 
 Feel free to contribute, make issues, or fork if you wish.
 
+If you want to use development builds you can download a build from: 
+https://ci.jackz.me/job/LobbyTools/ or [Download the latest directly](https://ci.jackz.me/job/LobbyTools/lastSuccessfulBuild/artifact/target/LobbyTools-1.0-SNAPSHOT.jar)
+
 ## Commands
 
 Main: /lobbytools, /lt, /lb
