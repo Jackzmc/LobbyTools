@@ -24,12 +24,13 @@ This plugin will run fine without any other plugins, but some functionality will
 
 * Parkour Regions (Requires **WorldGuard**)
 * Join ActionBar Messages (Requires **TTA**)
+* Coin Systems (Requires **Vault**)
 
 ## Commands
 
 Main: /lobbytools, /lt, /lb
 * **/lt help** - self-explanatory
-* **/lt parkour** <create/list/remove> - creates parkour regions
+* **/lt parkour** <create/list/remove/checkpoints/help> - manages parkour regions
 * **/lt reload** - reloads the config.yml
 
 ## Permissions

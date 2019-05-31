@@ -85,8 +85,9 @@ public class ParkourRegion {
         checkpoints.remove(id);
     }
     public void nextCheckpoint(Player p ) {
-        int player_current = current_checkpoints.get(p.getUniqueId());
-
+        Integer player_current = current_checkpoints.get(p.getUniqueId());
+        if(player_current == null) player_current = 0;
+        player_current++;
         //checkpoint 1 -> 0
         //size -> 1
         if(checkpoints.size() >= player_current) {
@@ -96,11 +97,12 @@ public class ParkourRegion {
         }
     }
     public void respawnPlayer(Player p) {
-        int checkpoint = current_checkpoints.get(p.getUniqueId());
-        if(checkpoint == 0) {
+        Integer checkpoint = current_checkpoints.get(p.getUniqueId());
+        if(checkpoint == null) {
             p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        }else{
+            Location spawnpoint = checkpoints.get(checkpoint);
+            p.teleport(spawnpoint, PlayerTeleportEvent.TeleportCause.PLUGIN);
         }
-        Location spawnpoint = checkpoints.get(checkpoint);
-        p.teleport(spawnpoint, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 }
