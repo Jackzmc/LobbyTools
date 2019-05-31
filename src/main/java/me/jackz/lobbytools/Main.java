@@ -26,9 +26,6 @@ public final class Main extends JavaPlugin {
     static File CONFIG_FILE;
 
     private FileConfiguration db;
-
-    static boolean TTA_ENABLED = false;
-
     /*todo:
      parkour regions
      gadgets
@@ -37,47 +34,38 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        // setup config and data yml files
+        CONFIG_FILE = new File (this.getDataFolder(), "config.yml");
         setupConfig();
         setupData();
         //Only set to replace for now, while in development:
+        //Save the messages.yml into the plugin file
         saveResource("messages.yml",true);
+
+        //get the main plugin world
         String config_world = getConfig().getString("lobby_world");
         if(config_world != null) world = Bukkit.getWorld(config_world);
         if(world == null) world = Bukkit.getWorld("world");
 
+        //load managers
+        loadManagersAndEvents();
 
-        lm = new LanguageManager(this);
-        parkourRegionManager = new ParkourRegionManager(this);
-        inventoryEvents = new InventoryEvents(this);
-        playerEvents = new PlayerEvents(this);
-        CONFIG_FILE = new File (this.getDataFolder(), "config.yml");
+        //register events
         getServer().getPluginManager().registerEvents(new JoinEvent(this),this);
         getServer().getPluginManager().registerEvents(inventoryEvents,this);
         getServer().getPluginManager().registerEvents(new EntityDamage(this),this);
         getServer().getPluginManager().registerEvents(playerEvents,this);
+
+        //register commands
         getCommand("lobbytools").setExecutor(new Commands(this));
+        //register for bungeecoord channel, for server changing
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-        Plugin TTA = getServer().getPluginManager().getPlugin("TTA");
-        if(TTA != null && TTA.isEnabled()) {
-            TTA_ENABLED = true;
-        }else{
+        //check for TTA, and warn player if failed
+        if(!isTTAEnabled()) {
             getLogger().warning("TTA not found, join action bar messages will be disabled");
+
         }
-    }
-
-    @Override
-    public void onDisable() {
-        parkourRegionManager.saveRegions();
-
-        lm = null;
-        inventoryEvents = null;
-        playerEvents = null;
-        world = null;
-        db = null;
-        parkourRegionManager = null;
-        // Plugin shutdown logic
     }
     void reloadPlugin() {
         String config_world = getConfig().getString("lobby_world");
@@ -87,27 +75,33 @@ public final class Main extends JavaPlugin {
         lm.loadMessages();
         parkourRegionManager.loadRegions();
     }
+    @Override
+    public void onDisable() {
+        //save data in classes
+        parkourRegionManager.saveRegions();
 
-    private void setupData() {
-        File file = new File(this.getDataFolder(), "data.yml");
-        YamlConfiguration db = YamlConfiguration.loadConfiguration(file);
-        db.addDefault("parkour_regions",new ArrayList<String>());
-        this.db = db;
-        try {
-            db.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //unload variables, probably not needed
+        lm = null;
+        inventoryEvents = null;
+        playerEvents = null;
+        world = null;
+        db = null;
+        parkourRegionManager = null;
+        // Plugin shutdown logic
     }
-    public FileConfiguration getData() {
-        return db;
+
+    private void loadManagersAndEvents() {
+        lm = new LanguageManager(this);
+        parkourRegionManager = new ParkourRegionManager(this);
+        inventoryEvents = new InventoryEvents(this);
+        playerEvents = new PlayerEvents(this);
     }
-    public ParkourRegionManager getParkourRegionManager() {
-        return parkourRegionManager;
+
+    boolean isTTAEnabled() {
+        Plugin TTA = getServer().getPluginManager().getPlugin("TTA");
+        return TTA != null && TTA.isEnabled();
     }
-    public LanguageManager getLanguageManager() {
-        return lm;
-    }
+
     private void setupConfig() {
         File configFile = new File (this.getDataFolder(), "config.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
@@ -127,5 +121,28 @@ public final class Main extends JavaPlugin {
             e1.printStackTrace();
         }
     }
+
+    private void setupData() {
+        File file = new File(this.getDataFolder(), "data.yml");
+        YamlConfiguration db = YamlConfiguration.loadConfiguration(file);
+        db.addDefault("parkour_regions",new ArrayList<String>());
+        this.db = db;
+        try {
+            db.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //getters
+    public FileConfiguration getData() {
+        return db;
+    }
+    public ParkourRegionManager getParkourRegionManager() {
+        return parkourRegionManager;
+    }
+    public LanguageManager getLanguageManager() {
+        return lm;
+    }
+
 
 }
