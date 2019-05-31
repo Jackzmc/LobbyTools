@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -97,7 +96,7 @@ class Commands implements CommandExecutor {
                                     int y = (int) Math.round(spawnpoint.getY());
                                     int z = (int) Math.round(spawnpoint.getZ());
                                     int yaw = Math.round(spawnpoint.getYaw());
-                                    p.sendMessage(String.format("§a%d. §e%s §7- X:%d Y:%d Z:%d Yaw:%d",i+1,region.getName(),x,y,z,yaw));
+                                    p.sendMessage(String.format("§a%d. §e%s §7: X:%d Y:%d Z:%d Yaw:%d",i+1,region.getName(),x,y,z,yaw));
                                 }
                                 break;
                             case "delete":
@@ -139,26 +138,46 @@ class Commands implements CommandExecutor {
                                     switch(args[3].toLowerCase()) {
                                         case "create":
                                         case "new":
-                                            lm.send(p,"notimplemented");
+                                        case "add": {
+                                            lm.send(p, "notimplemented");
+                                            int id = parkourRegion.addCheckpoint(p.getLocation());
+                                            id++;
+                                            p.sendMessage("§aAdded checkpoint §e#" + id);
+                                            break;
+                                        } case "getmine":
+                                            int region = parkourRegion.getPlayerCheckpoint(p);
+                                            p.sendMessage("you are on checkpoint #" + region);
                                             break;
                                         case "list":
-                                            HashMap<Integer,Location> checkpoints = parkourRegion.getCheckpoints();
-                                            checkpoints.put(0,p.getLocation());
+                                            List<Location> checkpoints = parkourRegion.getCheckpoints();
+                                            //HashMap<Integer,Location> checkpoints = parkourRegion.getCheckpoints();
                                             p.sendMessage("§6LobbyTools Parkour Regions");
+                                            if(checkpoints.size() == 0) {
+                                                p.sendMessage("§cThere are no checkpoints for this region.");
+                                                return true;
+                                            }
                                             for (int i = 0; i < checkpoints.size(); i++) {
                                                 Location loc = checkpoints.get(i);
                                                 int x = (int) Math.round(loc.getX());
                                                 int y = (int) Math.round(loc.getY());
                                                 int z = (int) Math.round(loc.getZ());
                                                 int yaw = Math.round(loc.getYaw());
-                                                p.sendMessage(String.format("§a%d. §e%s §7- X:%d Y:%d Z:%d Yaw:%d",i+1,i,x,y,z,yaw));
+                                                p.sendMessage(String.format("§e%d. §7X:%d Y:%d Z:%d Yaw:%d",i+1,x,y,z,yaw));
                                             }
                                             break;
                                         case "del":
                                         case "remove":
-                                        case "delete":
+                                        case "delete": {
+                                            try {
+                                                int id = Integer.parseInt(args[4]);
+                                                parkourRegion.removeCheckpoint(id);
+                                                p.sendMessage("§aRemoved checkpoint §e#" + id);
+                                            }catch(NumberFormatException e) {
+                                                p.sendMessage("§cInvalid id");
+                                                return true;
+                                            }
                                             break;
-                                        default:
+                                        } default:
                                             lm.sendCommand(p,"unknownargument");
                                     }
                                 }

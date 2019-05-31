@@ -14,7 +14,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /** A manager to create parkour regions and save/load them with ease
@@ -118,7 +117,7 @@ public final class ParkourRegionManager {
             db.set(section + "spawnpoint.yaw",(double)spawnpoint.getYaw());
             db.set(section + "min_y",region.getMinY());
             db.set(section + "fail_message",region.getFailMessage());
-            HashMap<Integer, Location> checkpoints = region.getCheckpoints();
+            List<Location> checkpoints = region.getCheckpoints();
 //            for(Location checkpoint : checkpoints) {
 //                String sec = section + ".checkpoints." + checkpoint;
 //
@@ -155,7 +154,7 @@ public final class ParkourRegionManager {
             Location loc = new Location(Main.world,parkours.getDouble(key + ".spawnpoint.x"),parkours.getDouble(key+".spawnpoint.y"),parkours.getDouble(key+".spawnpoint.z"));
             loc.setYaw((float) parkours.getDouble(key+".spawnpoint.yaw"));
 
-            HashMap<Integer,Location> checkpoints = new HashMap<>();
+            List<Location> checkpoints = new ArrayList<>();
             ConfigurationSection checkpoints_section = parkours.getConfigurationSection(key + ".checkpoints");
             /*if(checkpoints_section != null) {
                 for(String checkpoint_name : checkpoints_section.getKeys(false)) {

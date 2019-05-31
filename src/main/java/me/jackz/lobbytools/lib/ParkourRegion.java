@@ -4,7 +4,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class ParkourRegion {
@@ -22,7 +24,8 @@ public class ParkourRegion {
      */
 
     private HashMap<UUID, Integer> current_checkpoints = new HashMap<>();
-    private HashMap<Integer,Location> checkpoints = new HashMap<>();
+    private List<Location> checkpoints = new ArrayList<>();
+    //private HashMap<Integer,Location> checkpoints = new HashMap<>();
 
     public ParkourRegion(String name, Location spawn_point) {
         this.setName(name);
@@ -69,22 +72,25 @@ public class ParkourRegion {
         return (this.fail_message != null);
     }
 
-    public HashMap<Integer, Location> getCheckpoints() {
+    public List<Location> getCheckpoints() {
         return checkpoints;
     }
 
-    public void setCheckpoints(HashMap<Integer, Location> checkpoints) {
+   public void setCheckpoints(List<Location> checkpoints) {
         this.checkpoints = checkpoints;
     }
 
-    public void addCheckpoint(Location loc) {
-        int nextid = checkpoints.size()-1;
-        checkpoints.put(nextid,loc);
+    public int addCheckpoint(Location loc) {
+        int nextid = checkpoints.size();
+        checkpoints.add(nextid,loc);
+	    return nextid;
     }
     public void removeCheckpoint(int id) {
         checkpoints.remove(id);
     }
     public void nextCheckpoint(Player p ) {
+    	//i think this triggers multiple times:
+	    //todo: fix duplicate method firing
         Integer player_current = current_checkpoints.get(p.getUniqueId());
         if(player_current == null) player_current = 0;
         player_current++;
@@ -101,8 +107,23 @@ public class ParkourRegion {
         if(checkpoint == null) {
             p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
         }else{
-            Location spawnpoint = checkpoints.get(checkpoint);
-            p.teleport(spawnpoint, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            Location checkpoint_location = checkpoints.get(checkpoint);
+            if(checkpoint_location == null) {
+	            p.sendMessage("checkpoint failed, tp to spawn");
+	            p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            }else{
+	            p.teleport(checkpoint_location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            }
         }
+    }
+
+    public int getPlayerCheckpoint(Player p) {
+    	Integer player_current = current_checkpoints.get(p.getUniqueId());
+    	p.sendMessage("raw: " + player_current);
+    	if(player_current == null) {
+    		return 0;
+	    }else{
+    		return ++player_current;
+	    }
     }
 }
