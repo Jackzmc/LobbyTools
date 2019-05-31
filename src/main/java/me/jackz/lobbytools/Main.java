@@ -6,15 +6,12 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -24,7 +21,8 @@ public final class Main extends JavaPlugin {
     private static ParkourRegionManager parkourRegionManager;
     private static LanguageManager lm;
 
-    static Economy ECONOMY = null;
+
+    private static Economy ECONOMY = null;
 
     HashMap<UUID, Boolean> hidden_map = new HashMap<>();
     public static World world;
@@ -41,8 +39,8 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         // setup config and data yml files
         CONFIG_FILE = new File (this.getDataFolder(), "config.yml");
-        setupConfig();
-        setupData();
+        Setup.setupConfig(this);
+        db = Setup.setupData(this);
         //Only set to replace for now, while in development:
         //Save the messages.yml into the plugin file
         saveResource("messages.yml",true);
@@ -52,23 +50,15 @@ public final class Main extends JavaPlugin {
         if(config_world != null) world = Bukkit.getWorld(config_world);
         if(world == null) world = Bukkit.getWorld("world");
 
-        //load managers
+        //load managers & register events & commands
         loadManagersAndEvents();
-
-        //register events
-        registerEvents(this,
-                new JoinEvent(this),
-                new EntityDamage(this),
-                inventoryEvents,
-                playerEvents
-        );
-        //register commands
-        //noinspection ConstantConditions
         getCommand("lobbytools").setExecutor(new Commands(this));
+
+        //noinspection ConstantConditions
         //register for bungeecoord channel, for server changing
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-        //check for TTA, and warn player if failed
+        //check for plugins w/ warnings on fail
         if(!isPluginEnabled("TTA")) getLogger().warning("TTA not found, join action bar messages will be disabled");
         if(!isPluginEnabled("WorldGuard")) getLogger().warning("WorldGuard not found, parkour regions feature will be disabled");
         if (!setupEconomy() ) getLogger().warning("Vault not found, economy features will be disabled");
@@ -95,6 +85,7 @@ public final class Main extends JavaPlugin {
         parkourRegionManager = null;
         // Plugin shutdown logic
     }
+
     private boolean setupEconomy()
     {
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
@@ -113,43 +104,19 @@ public final class Main extends JavaPlugin {
         parkourRegionManager = new ParkourRegionManager(this);
         inventoryEvents = new InventoryEvents(this);
         playerEvents = new PlayerEvents(this);
+        registerEvents(this,
+                new JoinEvent(this),
+                new EntityDamage(this),
+                inventoryEvents,
+                playerEvents
+        );
     }
     boolean isPluginEnabled(String plugin_name) {
         Plugin plugin = getServer().getPluginManager().getPlugin(plugin_name);
         return plugin != null && plugin.isEnabled();
     }
 
-    private void setupConfig() {
-        File configFile = new File (this.getDataFolder(), "config.yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
-        config.addDefault("lobby_world", "world");
-        config.addDefault("servers",new ArrayList<String>());
-        config.addDefault("launchpad_enabled",true);
-        config.addDefault("y_spawn_teleport",0);
-        config.addDefault("parkour_regions",new ArrayList<String>());
-        config.addDefault("messages.title","Welcome to the Server!");
-        config.addDefault("messages.subtitle","");
-        config.addDefault("messages.actionbar","");
-        config.options().copyDefaults(true);
-        try {
-            config.save(configFile);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-    }
-
-    private void setupData() {
-        File file = new File(this.getDataFolder(), "data.yml");
-        YamlConfiguration db = YamlConfiguration.loadConfiguration(file);
-        db.addDefault("parkour_regions",new ArrayList<String>());
-        this.db = db;
-        try {
-            db.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     //getters
     public FileConfiguration getData() {
         return db;
@@ -160,6 +127,7 @@ public final class Main extends JavaPlugin {
     LanguageManager getLanguageManager() {
         return lm;
     }
+    static Economy getECONOMY() { return ECONOMY; }
 
 
 }
