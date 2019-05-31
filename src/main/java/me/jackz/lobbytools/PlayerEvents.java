@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Material;
@@ -39,6 +40,7 @@ class PlayerEvents implements Listener {
     };
     private boolean launchpad_enabled = false;
     private static ParkourRegionManager parkourRegionManager;
+    private static LanguageManager lm;
     private int y_teleport = 0;
     PlayerEvents(Main plugin) {
         this.plugin = plugin;
@@ -48,6 +50,7 @@ class PlayerEvents implements Listener {
         plugin.getConfig().getBoolean("launchpad_enabled");
         y_teleport = plugin.getConfig().getInt("y_spawn_teleport");
         parkourRegionManager = plugin.getParkourRegionManager();
+        lm = plugin.getLanguageManager();
     }
 
 
@@ -79,6 +82,11 @@ class PlayerEvents implements Listener {
         for (ProtectedRegion region : set) {
             for (ParkourRegion parkourRegion : parkourRegionList) {
                 if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
+                    if(p.isFlying()) {
+                        lm.send(p,"parkour_flight_disabled");
+                    }
+                    p.setAllowFlight(false);
+                    p.setFlying(false);
                     //is parkour region
                     if(p.getLocation().getY() < parkourRegion.getMinY()) {
                         parkourRegion.respawnPlayer(p);
@@ -94,7 +102,10 @@ class PlayerEvents implements Listener {
                 }
             }
         }
-
+        //need some check so not called 24/7?
+        if(!p.isFlying() && !p.getAllowFlight() && p.hasPermission("lobbytools.lobby.flight")) {
+            p.setAllowFlight(true);
+        }
     }
 
 
