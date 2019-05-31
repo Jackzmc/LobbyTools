@@ -75,7 +75,7 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         //save data in classes
         parkourRegionManager.saveRegions();
-
+		playerEvents.reloadVariables();
         //unload variables, probably not needed
         lm = null;
         inventoryEvents = null;

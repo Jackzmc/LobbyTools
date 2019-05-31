@@ -38,10 +38,15 @@ class PlayerEvents implements Listener {
             Material.ACACIA_PRESSURE_PLATE,
             Material.JUNGLE_PRESSURE_PLATE
     };
+    private boolean launchpad_enabled = false;
     private static ParkourRegionManager parkourRegionManager;
     private int y_teleport = 0;
     PlayerEvents(Main plugin) {
         this.plugin = plugin;
+        reloadVariables();
+    }
+    void reloadVariables() {
+        plugin.getConfig().getBoolean("launchpad_enabled");
         y_teleport = plugin.getConfig().getInt("y_spawn_teleport");
         parkourRegionManager = plugin.getParkourRegionManager();
     }
@@ -53,11 +58,10 @@ class PlayerEvents implements Listener {
         if(!p.getWorld().equals(Main.world)) return;
         Block b = p.getLocation().getBlock();
 
-
-        if(plugin.getConfig().getBoolean("launchpad_enabled")) {
+        if(launchpad_enabled) {
             for (Material plate : PRESSURE_PLATES) {
                 if (b.getType().equals(plate)) {
-                    p.setVelocity(p.getLocation().getDirection().multiply(4));
+                    p.setVelocity(p.getLocation().getDirection().multiply(3));
                     p.setVelocity(new Vector(p.getVelocity().getX(), 1.0D, p.getVelocity().getZ()));
                     break;
                 }
@@ -66,8 +70,9 @@ class PlayerEvents implements Listener {
         }
         if(p.getLocation().getY() <= y_teleport) {
             p.teleport(Main.world.getSpawnLocation());
+            return;
         }
-
+        //probably needs some optimization
         List<ParkourRegion> parkourRegionList = parkourRegionManager.getRegions();
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
@@ -84,6 +89,7 @@ class PlayerEvents implements Listener {
                 }
             }
         }
+
     }
 
 
