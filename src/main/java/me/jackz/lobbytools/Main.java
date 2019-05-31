@@ -2,12 +2,14 @@ package me.jackz.lobbytools;
 
 import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -21,6 +23,8 @@ public final class Main extends JavaPlugin {
     private static PlayerEvents playerEvents;
     private static ParkourRegionManager parkourRegionManager;
     private static LanguageManager lm;
+
+    static Economy ECONOMY = null;
 
     HashMap<UUID, Boolean> hidden_map = new HashMap<>();
     public static World world;
@@ -67,6 +71,7 @@ public final class Main extends JavaPlugin {
         //check for TTA, and warn player if failed
         if(!isPluginEnabled("TTA")) getLogger().warning("TTA not found, join action bar messages will be disabled");
         if(!isPluginEnabled("WorldGuard")) getLogger().warning("WorldGuard not found, parkour regions feature will be disabled");
+        if (!setupEconomy() ) getLogger().warning("Vault not found, economy features will be disabled");
     }
     void reloadPlugin() {
         String config_world = getConfig().getString("lobby_world");
@@ -89,6 +94,14 @@ public final class Main extends JavaPlugin {
         db = null;
         parkourRegionManager = null;
         // Plugin shutdown logic
+    }
+    private boolean setupEconomy()
+    {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            ECONOMY = economyProvider.getProvider();
+        }
+        return (ECONOMY != null);
     }
     private static void registerEvents(org.bukkit.plugin.Plugin plugin, Listener... listeners) {
         for (Listener listener : listeners) {
