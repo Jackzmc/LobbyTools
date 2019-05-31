@@ -1,5 +1,11 @@
 package me.jackz.lobbytools.lib;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.jackz.lobbytools.Main;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -64,8 +70,32 @@ public final class ParkourRegionManager {
         }
         return false;
     }
-    private ParkourRegion findRegion(String name) {
-        for (ParkourRegion region : regions) {
+
+    /** Locate a parkour region by worldguard regions
+     * @param loc Location to search for
+     * @return ParkourRegion class
+     */
+    public ParkourRegion getRegion(Location loc) {
+        List<ParkourRegion> parkourRegionList = getRegions();
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(loc));
+        for (ProtectedRegion region : set) {
+            for (ParkourRegion parkourRegion : parkourRegionList) {
+                if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
+                    return parkourRegion;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Find a parkour region by name
+     * @param name The case-insensitive name of location
+     * @return ParkourRegion class
+     */
+    public ParkourRegion findRegion(String name) {
+        for (ParkourRegion region : getRegions()) {
             if(region.getName().equalsIgnoreCase(name)) {
                 return region;
             }

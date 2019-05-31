@@ -5,12 +5,15 @@ command:
     nopermission: "&cYou do not have permission to use this command."
     playeronly: "You must be a player to use this command."
     unknownargument: "&cUnknown argument, try /lt help"
-    notimplemented: "&cNot Implemented"
     parkour:
         help:
             - "&e/lt parkour create <name> [min y] &7- creates a region with spawnpoint at your feet"
             - "&e/lt parkour list &7- list all parkour regions"
             - "&e/lt parkour remove <name> &7- remove a certain region"
+            - "&6Checkpoint Commands"
+            - "&e/lt parkour checkpoint <name> add - &7creates a checkpoint at your feet"
+            - "&e/lt parkour checkpoint <name> list - &7list all checkpoints"
+            - "&e/lt parkour checkpoint <name> remove <checkpoint id> - &7delete a specific checkpoint"
         delete:
             success: "&aSuccessfully deleted parkour region"
             failed: "&cFailed to remove parkour region"
@@ -19,13 +22,14 @@ command:
             invalidnumber: "&cInvalid minimum Y-Level. Please use a whole number"
             noregionfound: "&cCould not create parkour region: No WorldGuard regions found at your location"
         usage: "&cUsage: /lobbytools parkour help"
-        invalid: "&cInvalid usage. Usage:"
+        invalid: "&cInvalid usage. Usage: %s"
         worldguard_not_enabled: "&cWorldGuard is not enabled, and is needed for Parkour Regions"
         unknownargument: "&cUnknown parkour argument. Try /lt parkour help"
     reload:
         success: "&aSuccessfully reloaded configuration."
         failed_general: "&cFailed to load configuration file"
         failed_invalid: "&cFailed to load configuration file due to invalid configuration."
+notimplemented: "&cNot Implemented"
 teleport_to_server: "&eTeleporting you to &s"
 server_incorrect_format: "&cSorry, but that server is not configured correctly."
 incorrect_gadget: "&cSorry but that gadget isn't setup correctly."

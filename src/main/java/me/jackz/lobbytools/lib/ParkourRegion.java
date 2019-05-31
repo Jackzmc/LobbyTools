@@ -1,6 +1,8 @@
 package me.jackz.lobbytools.lib;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -81,5 +83,24 @@ public class ParkourRegion {
     }
     public void removeCheckpoint(int id) {
         checkpoints.remove(id);
+    }
+    public void nextCheckpoint(Player p ) {
+        int player_current = current_checkpoints.get(p.getUniqueId());
+
+        //checkpoint 1 -> 0
+        //size -> 1
+        if(checkpoints.size() >= player_current) {
+            current_checkpoints.put(p.getUniqueId(),player_current);
+        }else{
+            //todo: end logic
+        }
+    }
+    public void respawnPlayer(Player p) {
+        int checkpoint = current_checkpoints.get(p.getUniqueId());
+        if(checkpoint == 0) {
+            p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        }
+        Location spawnpoint = checkpoints.get(checkpoint);
+        p.teleport(spawnpoint, PlayerTeleportEvent.TeleportCause.PLUGIN);
     }
 }
