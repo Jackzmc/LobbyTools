@@ -118,22 +118,14 @@ public final class ParkourRegionManager {
             db.set(section + "min_y",region.getMinY());
             db.set(section + "fail_message",region.getFailMessage());
             List<Location> checkpoints = region.getCheckpoints();
-//            for(Location checkpoint : checkpoints) {
-//                String sec = section + ".checkpoints." + checkpoint;
-//
-//                db.set()
-//            }
-//            ConfigurationSection checkpoints_section = parkours.getConfigurationSection(key + ".checkpoints");
-//            if(checkpoints_section != null) {
-//                for(String checkpoint_name : checkpoints_section.getKeys(false)) {
-//                    double x = checkpoints_section.getDouble(checkpoint_name+".x");
-//                    double y = checkpoints_section.getDouble(checkpoint_name+".y");
-//                    double z = checkpoints_section.getDouble(checkpoint_name+".z");
-//                    float yaw = (float)checkpoints_section.getDouble(checkpoint_name+".yaw");
-//                    checkpoints.add(new Location(Main.world,x,y,z,yaw,0));
-//                }
-//            }
-
+            ConfigurationSection checkpoint_config = db.createSection(section + ".checkpoints");
+            for (int i = 0; i < checkpoints.size(); i++) {
+                Location checkpoint = checkpoints.get(i);
+                db.set(section + i + ".x",checkpoint.getX());
+                db.set(section + i + ".y",checkpoint.getY());
+                db.set(section + i + ".z",checkpoint.getZ());
+                db.set(section + i + ".yaw",checkpoint.getYaw());
+            }
         }
         plugin.getLogger().info("Saving " + regions.size() + " regions");
         try {
@@ -156,15 +148,17 @@ public final class ParkourRegionManager {
 
             List<Location> checkpoints = new ArrayList<>();
             ConfigurationSection checkpoints_section = parkours.getConfigurationSection(key + ".checkpoints");
-            /*if(checkpoints_section != null) {
-                for(String checkpoint_name : checkpoints_section.getKeys(false)) {
-                    double x = checkpoints_section.getDouble(checkpoint_name+".x");
-                    double y = checkpoints_section.getDouble(checkpoint_name+".y");
-                    double z = checkpoints_section.getDouble(checkpoint_name+".z");
-                    float yaw = (float)checkpoints_section.getDouble(checkpoint_name+".yaw");
-                    checkpoints.add(new Location(Main.world,x,y,z,yaw,0));
+            if(checkpoints_section != null) {
+                for(String id : checkpoints_section.getKeys(false)) {
+                    double x = checkpoints_section.getDouble(id+".x");
+                    double y = checkpoints_section.getDouble(id+".y");
+                    double z = checkpoints_section.getDouble(id+".z");
+                    float yaw = (float)checkpoints_section.getDouble(id+".yaw");
+
+                    Location new_location = new Location(Main.world,x,y,z,yaw,0);
+                    checkpoints.add(new_location);
                 }
-            }*/
+            }
 
             ParkourRegion region = new ParkourRegion(key,loc);
             region.setCheckpoints(checkpoints);

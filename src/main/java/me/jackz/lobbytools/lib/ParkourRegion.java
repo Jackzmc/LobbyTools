@@ -107,7 +107,7 @@ public class ParkourRegion {
         if(checkpoint == null) {
             p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
         }else{
-            Location checkpoint_location = checkpoints.get(checkpoint);
+            Location checkpoint_location = checkpoints.get(checkpoint-1);
             if(checkpoint_location == null) {
 	            p.sendMessage("checkpoint failed, tp to spawn");
 	            p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
