@@ -47,7 +47,7 @@ class PlayerEvents implements Listener {
         reloadVariables();
     }
     void reloadVariables() {
-        plugin.getConfig().getBoolean("launchpad_enabled");
+        launchpad_enabled = plugin.getConfig().getBoolean("launchpad_enabled");
         y_teleport = plugin.getConfig().getInt("y_spawn_teleport");
         parkourRegionManager = plugin.getParkourRegionManager();
         lm = plugin.getLanguageManager();
