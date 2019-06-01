@@ -109,7 +109,8 @@ public final class ParkourRegionManager {
         FileConfiguration db = plugin.getData();
         db.set("parkour_regions",new ArrayList<String>());
         for (ParkourRegion region : regions) {
-            String section = "parkour_regions." + region.getName() + ".";
+            final String section = "parkour_regions." + region.getName() + ".";
+
             Location spawnpoint = region.getSpawnPoint();
             db.set(section + "spawnpoint.x",spawnpoint.getX());
             db.set(section + "spawnpoint.y",spawnpoint.getY());
@@ -121,10 +122,10 @@ public final class ParkourRegionManager {
             ConfigurationSection checkpoint_config = db.createSection(section + ".checkpoints");
             for (int i = 0; i < checkpoints.size(); i++) {
                 Location checkpoint = checkpoints.get(i);
-                db.set(section + i + ".x",checkpoint.getX());
-                db.set(section + i + ".y",checkpoint.getY());
-                db.set(section + i + ".z",checkpoint.getZ());
-                db.set(section + i + ".yaw",checkpoint.getYaw());
+                db.set(section + "checkpoints." + i + ".x",checkpoint.getX());
+                db.set(section + "checkpoints." + i + ".y",checkpoint.getY());
+                db.set(section + "checkpoints." + i + ".z",checkpoint.getZ());
+                db.set(section + "checkpoints." + i + ".yaw",checkpoint.getYaw());
             }
         }
         plugin.getLogger().info("Saving " + regions.size() + " regions");

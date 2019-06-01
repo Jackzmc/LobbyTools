@@ -98,7 +98,7 @@ class PlayerEvents implements Listener {
                             parkourRegion.nextCheckpoint(p);
                         }
                     }
-                    break;
+                    return;
                 }
             }
         }

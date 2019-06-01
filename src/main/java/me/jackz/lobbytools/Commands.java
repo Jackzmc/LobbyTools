@@ -5,25 +5,15 @@ import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 class Commands implements CommandExecutor {
     private final Main plugin;
@@ -208,34 +198,11 @@ class Commands implements CommandExecutor {
                     lm.sendCommand(sender,"nopermission");
                 }
                 break;
-            case "logs":
-                try {
-                    Player p = (Player) sender;
-                    String log = plugin.getDataFolder().toPath() + "/../../logs/latest.log";
-                    FileInputStream in = new FileInputStream(log);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-                    List<String> lines = new LinkedList<>();
-                    for (String tmp; (tmp = br.readLine()) != null; )
-                        lines.add(tmp);
-                        if (lines.size() > 5) //this removes older
-                            lines.remove(0);
-                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-                    BookMeta meta = (BookMeta) book.getItemMeta();
-                    Date today = new Date();
-                    assert meta != null;
-                    meta.setAuthor("shittyCode");
-                    meta.setTitle("Logs " +  new SimpleDateFormat("yyyy-MM-dd").format(today));
-                    for (String line : lines) {
-                        meta.addPage(line.trim());
-                    }
-                    book.setItemMeta(meta);
-                    p.getInventory().addItem(book);
-                } catch (Exception ex) {
-                    sender.sendMessage("Failed to get file: " + ex.toString());
-                    plugin.getLogger().log(Level.INFO, "getlogs!", ex);
-                }
-                break;
+            case "save":
+                plugin.getParkourRegionManager().saveRegions();
+                plugin.saveConfig();
+                //plugin.saveData();
+                sender.sendMessage("§aSuccessfully saved data");
             case "restart":
                 //THIS IS A DEV FEATURE ONLY, REMOVE ON PROD
                 Bukkit.dispatchCommand(sender, "plugman reload LobbyTools");
