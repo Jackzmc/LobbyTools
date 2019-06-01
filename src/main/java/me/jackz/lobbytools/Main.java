@@ -67,6 +67,7 @@ public final class Main extends JavaPlugin {
         String config_world = getConfig().getString("lobby_world");
         if(config_world != null) world = Bukkit.getWorld(config_world);
         inventoryEvents.updateInventories();
+        playerEvents.reloadVariables();
         //playerEvents.updateRegions();
         lm.loadMessages();
         parkourRegionManager.loadRegions();
@@ -75,7 +76,6 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         //save data in classes
         parkourRegionManager.saveRegions();
-		playerEvents.reloadVariables();
         //unload variables, probably not needed
         lm = null;
         inventoryEvents = null;
