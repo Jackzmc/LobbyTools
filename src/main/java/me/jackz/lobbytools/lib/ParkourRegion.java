@@ -91,23 +91,35 @@ public class ParkourRegion {
     public void nextCheckpoint(Player p ) {
     	//i think this triggers multiple times:
 	    //todo: fix duplicate method firing
-        Integer player_current = current_checkpoints.get(p.getUniqueId());
-        if(player_current == null) player_current = 0;
-        player_current++;
+        //Integer player_current = current_checkpoints.get(p.getUniqueId());
+        //if(player_current == null) player_current = 0;
+        //player_current++;
+        int pl_x = p.getLocation().getBlockX();
+        int pl_y = p.getLocation().getBlockY();
+        int pl_z = p.getLocation().getBlockZ();
+        for (int i = 0; i < getCheckpoints().size(); i++) {
+            double x = checkpoints.get(i).getBlockX();
+            double y = checkpoints.get(i).getBlockY();
+            double z = checkpoints.get(i).getBlockZ();
+            if(pl_x == x && pl_y == y && pl_z == z) {
+                current_checkpoints.put(p.getUniqueId(),i);
+                break;
+            }
+        }
         //checkpoint 1 -> 0
         //size -> 1
-        if(checkpoints.size() >= player_current) {
-            current_checkpoints.put(p.getUniqueId(),player_current);
-        }else{
-            //todo: end logic
-        }
+//        if(checkpoints.size() >= player_current) {
+//            current_checkpoints.put(p.getUniqueId(),player_current);
+//        }else{
+//            //todo: end logic
+//        }
     }
     public void respawnPlayer(Player p) {
         Integer checkpoint = current_checkpoints.get(p.getUniqueId());
         if(checkpoint == null) {
             p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
         }else{
-            Location checkpoint_location = checkpoints.get(checkpoint-1);
+            Location checkpoint_location = checkpoints.get(checkpoint);
             if(checkpoint_location == null) {
 	            p.sendMessage("checkpoint failed, tp to spawn");
 	            p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);

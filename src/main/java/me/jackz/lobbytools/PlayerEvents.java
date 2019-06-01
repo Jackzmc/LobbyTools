@@ -9,6 +9,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -59,6 +60,11 @@ class PlayerEvents implements Listener {
         Player p = e.getPlayer();
         if(!p.getWorld().equals(Main.world)) return;
         Block b = p.getLocation().getBlock();
+
+        Location from = e.getFrom();
+        Location to = e.getTo();
+        if(to == null) return; //apparently .getTo() can be null
+        if(from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ()) return;
 
         if(launchpad_enabled) {
             for (Material plate : PRESSURE_PLATES) {
