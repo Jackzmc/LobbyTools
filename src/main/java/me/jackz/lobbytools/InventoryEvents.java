@@ -103,6 +103,7 @@ class InventoryEvents implements Listener {
             if(item == null || !item.hasItemMeta()) return;
             List<String> lores = item.getItemMeta().getLore();
             String last_value = ChatColor.stripColor(lores.get(lores.size()-1));
+            //todo: instead of using lore Server:<blah>, remember the slot number
             if(last_value.toLowerCase().startsWith("server")) {
                 String lore_server = last_value.split(":")[1];
                 for(String server : server_ids) {

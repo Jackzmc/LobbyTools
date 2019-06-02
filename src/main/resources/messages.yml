@@ -1,7 +1,10 @@
 command:
+    noarguments: "&cNo arguments added. Type &e/lt help &cto get help"
     help:
      - "&e/lt parkour &7- manage parkour regions"
      - "&e/lt reload &7- reloads the config file"
+     - "&e/lt save &7 - saves the config file"
+     - "&e/lt help &7 - get this menu"
     nopermission: "&cYou do not have permission to use this command."
     playeronly: "You must be a player to use this command."
     unknownargument: "&cUnknown argument, try /lt help"

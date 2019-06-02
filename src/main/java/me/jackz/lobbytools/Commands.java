@@ -40,7 +40,8 @@ class Commands implements CommandExecutor {
             return true;
         }
         if(args.length == 0) {
-            return false;
+            lm.sendCommand(sender,"noarguments");
+            return true;
         }
         switch(args[0].toLowerCase()) {
             case "pk":
