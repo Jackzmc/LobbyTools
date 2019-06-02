@@ -10,6 +10,7 @@ import de.Herbystar.TTA.TTA_Methods;
 import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -79,11 +80,13 @@ class PlayerEvents implements Listener {
         for (ProtectedRegion region : set) {
             for (ParkourRegion parkourRegion : parkourRegionList) {
                 if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
-                    if(p.isFlying()) {
-                        lm.send(p,"parkour.flight_disabled");
-                    }
-                    p.setAllowFlight(false);
-                    p.setFlying(false);
+                	if(!p.getGameMode().equals(GameMode.CREATIVE) & !p.getGameMode().equals(GameMode.SPECTATOR)) {
+		                if (p.isFlying()) {
+			                lm.send(p, "parkour.flight_disabled");
+		                }
+		                p.setAllowFlight(false);
+		                p.setFlying(false);
+	                }
                     //is parkour region
                     if(p.getLocation().getY() < parkourRegion.getMinY()) {
                         parkourRegion.respawnPlayer(p);
