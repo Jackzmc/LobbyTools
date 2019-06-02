@@ -15,6 +15,7 @@ public class ParkourRegion {
     private String name;
     private int y = 0;
     private String fail_message;
+    private int max_tries = -1;
 
     //possibly add new class 'ParkourRegionCheckpoint'
     //private HashMap<UUID,Location>
@@ -26,6 +27,7 @@ public class ParkourRegion {
 
     private HashMap<UUID, Integer> current_checkpoints = new HashMap<>();
     private List<Location> checkpoints = new ArrayList<>();
+    private HashMap<UUID, Integer> user_tries = new HashMap<>();
     //private HashMap<Integer,Location> checkpoints = new HashMap<>();
 
     public ParkourRegion(String name, Location spawn_point) {
@@ -49,7 +51,7 @@ public class ParkourRegion {
     public Location getSpawnPoint() {
         return spawn_point;
     }
-
+    //possibly merge spawnpoint with checkpoint - as id #0
     public void setSpawnPoint(Location spawn_point) {
         this.spawn_point = spawn_point;
     }
@@ -118,6 +120,21 @@ public class ParkourRegion {
     }
     public void respawnPlayer(Player p) {
         Integer checkpoint = current_checkpoints.get(p.getUniqueId());
+        if(max_tries != -1) {
+            Integer tries = user_tries.get(p.getUniqueId());
+            if(tries != null) {
+                user_tries.put(p.getUniqueId(),++tries);
+            }else{
+                user_tries.put(p.getUniqueId(),1);
+                tries = 1;
+            }
+            if(tries > max_tries) {
+                resetCheckpoints(p);
+                if(hasFailMessage()) {
+                    p.sendMessage(fail_message);
+                }
+            }
+        }
         if(checkpoint == null) {
             p.teleport(spawn_point, PlayerTeleportEvent.TeleportCause.PLUGIN);
         }else{
@@ -139,5 +156,16 @@ public class ParkourRegion {
 	    }else{
     		return ++player_current;
 	    }
+    }
+    public void resetCheckpoints(Player p ) {
+        current_checkpoints.remove(p.getUniqueId());
+    }
+
+    public int getMaxTries() {
+        return max_tries;
+    }
+
+    public void setMaxTries(int max_tries) {
+        this.max_tries = max_tries;
     }
 }

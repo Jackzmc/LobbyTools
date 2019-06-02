@@ -118,6 +118,7 @@ public final class ParkourRegionManager {
             db.set(section + "spawnpoint.yaw",(double)spawnpoint.getYaw());
             db.set(section + "min_y",region.getMinY());
             db.set(section + "fail_message",region.getFailMessage());
+            db.set(section + "max_tries",region.getMaxTries());
             List<Location> checkpoints = region.getCheckpoints();
             ConfigurationSection checkpoint_config = db.createSection(section + ".checkpoints");
             for (int i = 0; i < checkpoints.size(); i++) {
@@ -164,8 +165,7 @@ public final class ParkourRegionManager {
             ParkourRegion region = new ParkourRegion(key,loc);
             region.setCheckpoints(checkpoints);
             region.setMinY(parkours.getInt(key+".min_y"));
-
-
+            region.setMaxTries(parkours.getInt("max_tries"));
 
             String fail_message = parkours.getString(key+".fail_message");
             region.setFailMessage(fail_message);

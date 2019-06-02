@@ -110,6 +110,7 @@ public final class Main extends JavaPlugin {
         playerEvents = new PlayerEvents(this);
         registerEvents(this,
                 new JoinEvent(this),
+                new LeaveEvent(this),
                 new EntityDamage(this),
                 inventoryEvents,
                 playerEvents

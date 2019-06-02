@@ -91,7 +91,7 @@ class PlayerEvents implements Listener {
                     if(p.getLocation().getY() < parkourRegion.getMinY()) {
                         parkourRegion.respawnPlayer(p);
                         //p.teleport(parkourRegion.getSpawnPoint(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-                        if(parkourRegion.hasFailMessage()) p.sendMessage(parkourRegion.getFailMessage());
+                        //if(parkourRegion.hasFailMessage()) p.sendMessage(parkourRegion.getFailMessage());
                     }else{
                         Block beneath = p.getLocation().subtract(0,1,0).getBlock();
                         if(beneath.getType().equals(Material.GOLD_BLOCK)) {
