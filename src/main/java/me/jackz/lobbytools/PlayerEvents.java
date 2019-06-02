@@ -17,6 +17,7 @@ import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -59,23 +60,12 @@ class PlayerEvents implements Listener {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         if(!p.getWorld().equals(Main.world)) return;
-        Block b = p.getLocation().getBlock();
 
         Location from = e.getFrom();
         Location to = e.getTo();
         if(to == null) return; //apparently .getTo() can be null
         if(from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ()) return;
 
-        if(launchpad_enabled) {
-            for (Material plate : PRESSURE_PLATES) {
-                if (b.getType().equals(plate)) {
-                    p.setVelocity(p.getLocation().getDirection().multiply(3));
-                    p.setVelocity(new Vector(p.getVelocity().getX(), 1.0D, p.getVelocity().getZ()));
-                    break;
-                }
-            }
-
-        }
         if(p.getLocation().getY() <= y_teleport) {
             p.teleport(Main.world.getSpawnLocation());
             return;
@@ -119,7 +109,19 @@ class PlayerEvents implements Listener {
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
         ItemStack item = e.getItem();
-
+        if(e.getAction() == Action.PHYSICAL) {
+            if(launchpad_enabled) {
+                Block b = e.getClickedBlock();
+                for (Material plate : PRESSURE_PLATES) {
+                    if (b.getType().equals(plate)) {
+                        p.setVelocity(p.getLocation().getDirection().multiply(3));
+                        p.setVelocity(new Vector(p.getVelocity().getX(), 1.0D, p.getVelocity().getZ()));
+                        break;
+                    }
+                }
+            }
+            return;
+        }
         if (item == null) {
             if (!p.hasPermission("lobbytools.bypass.inventory")) e.setCancelled(true);
             return;
