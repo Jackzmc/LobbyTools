@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import de.Herbystar.TTA.TTA_Methods;
 import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
@@ -79,7 +80,7 @@ class PlayerEvents implements Listener {
             for (ParkourRegion parkourRegion : parkourRegionList) {
                 if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
                     if(p.isFlying()) {
-                        lm.send(p,"parkour_flight_disabled");
+                        lm.send(p,"parkour.flight_disabled");
                     }
                     p.setAllowFlight(false);
                     p.setFlying(false);
@@ -91,7 +92,11 @@ class PlayerEvents implements Listener {
                     }else{
                         Block beneath = p.getLocation().subtract(0,1,0).getBlock();
                         if(beneath.getType().equals(Material.GOLD_BLOCK)) {
-                            parkourRegion.nextCheckpoint(p);
+                            int next_checkpoint_id = parkourRegion.nextCheckpoint(p) + 1;
+                            if(plugin.isPluginEnabled("TTA")) {
+                                String message = lm.get("parkour.next_checkpoint",next_checkpoint_id);
+                                TTA_Methods.sendActionBar(p,message,40);
+                            }
                         }
                     }
                     return;

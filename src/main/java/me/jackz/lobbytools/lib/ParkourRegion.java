@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("WeakerAccess")
 public class ParkourRegion {
     private Location spawn_point;
     private String name;
@@ -88,7 +89,7 @@ public class ParkourRegion {
     public void removeCheckpoint(int id) {
         checkpoints.remove(id);
     }
-    public void nextCheckpoint(Player p ) {
+    public int nextCheckpoint(Player p ) {
     	//i think this triggers multiple times:
 	    //todo: fix duplicate method firing
         //Integer player_current = current_checkpoints.get(p.getUniqueId());
@@ -103,7 +104,7 @@ public class ParkourRegion {
             double z = checkpoints.get(i).getBlockZ();
             if(pl_x == x && pl_y == y && pl_z == z) {
                 current_checkpoints.put(p.getUniqueId(),i);
-                break;
+                return i;
             }
         }
         //checkpoint 1 -> 0
@@ -113,6 +114,7 @@ public class ParkourRegion {
 //        }else{
 //            //todo: end logic
 //        }
+        return -1;
     }
     public void respawnPlayer(Player p) {
         Integer checkpoint = current_checkpoints.get(p.getUniqueId());
