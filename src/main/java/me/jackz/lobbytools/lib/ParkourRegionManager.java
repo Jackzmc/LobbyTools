@@ -1,5 +1,11 @@
 package me.jackz.lobbytools.lib;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.jackz.lobbytools.Main;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -63,8 +69,32 @@ public final class ParkourRegionManager {
         }
         return false;
     }
-    private ParkourRegion findRegion(String name) {
-        for (ParkourRegion region : regions) {
+
+    /** Locate a parkour region by worldguard regions
+     * @param loc Location to search for
+     * @return ParkourRegion class
+     */
+    public ParkourRegion getRegion(Location loc) {
+        List<ParkourRegion> parkourRegionList = getRegions();
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(loc));
+        for (ProtectedRegion region : set) {
+            for (ParkourRegion parkourRegion : parkourRegionList) {
+                if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
+                    return parkourRegion;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Find a parkour region by name
+     * @param name The case-insensitive name of location
+     * @return ParkourRegion class
+     */
+    public ParkourRegion findRegion(String name) {
+        for (ParkourRegion region : getRegions()) {
             if(region.getName().equalsIgnoreCase(name)) {
                 return region;
             }
@@ -79,7 +109,8 @@ public final class ParkourRegionManager {
         FileConfiguration db = plugin.getData();
         db.set("parkour_regions",new ArrayList<String>());
         for (ParkourRegion region : regions) {
-            String section = "parkour_regions." + region.getName() + ".";
+            final String section = "parkour_regions." + region.getName() + ".";
+
             Location spawnpoint = region.getSpawnPoint();
             db.set(section + "spawnpoint.x",spawnpoint.getX());
             db.set(section + "spawnpoint.y",spawnpoint.getY());
@@ -87,6 +118,16 @@ public final class ParkourRegionManager {
             db.set(section + "spawnpoint.yaw",(double)spawnpoint.getYaw());
             db.set(section + "min_y",region.getMinY());
             db.set(section + "fail_message",region.getFailMessage());
+            db.set(section + "max_tries",region.getMaxTries());
+            List<Location> checkpoints = region.getCheckpoints();
+            ConfigurationSection checkpoint_config = db.createSection(section + ".checkpoints");
+            for (int i = 0; i < checkpoints.size(); i++) {
+                Location checkpoint = checkpoints.get(i);
+                db.set(section + "checkpoints." + i + ".x",checkpoint.getX());
+                db.set(section + "checkpoints." + i + ".y",checkpoint.getY());
+                db.set(section + "checkpoints." + i + ".z",checkpoint.getZ());
+                db.set(section + "checkpoints." + i + ".yaw",checkpoint.getYaw());
+            }
         }
         plugin.getLogger().info("Saving " + regions.size() + " regions");
         try {
@@ -104,11 +145,27 @@ public final class ParkourRegionManager {
         ConfigurationSection parkours = plugin.getData().getConfigurationSection("parkour_regions");
         if(parkours == null) return;
         for (String key : parkours.getKeys(false)) {
-            plugin.getLogger().info("f: " + parkours.getDouble(key+".spawnpoint.yaw"));
             Location loc = new Location(Main.world,parkours.getDouble(key + ".spawnpoint.x"),parkours.getDouble(key+".spawnpoint.y"),parkours.getDouble(key+".spawnpoint.z"));
             loc.setYaw((float) parkours.getDouble(key+".spawnpoint.yaw"));
+
+            List<Location> checkpoints = new ArrayList<>();
+            ConfigurationSection checkpoints_section = parkours.getConfigurationSection(key + ".checkpoints");
+            if(checkpoints_section != null) {
+                for(String id : checkpoints_section.getKeys(false)) {
+                    double x = checkpoints_section.getDouble(id+".x");
+                    double y = checkpoints_section.getDouble(id+".y");
+                    double z = checkpoints_section.getDouble(id+".z");
+                    float yaw = (float)checkpoints_section.getDouble(id+".yaw");
+
+                    Location new_location = new Location(Main.world,x,y,z,yaw,0);
+                    checkpoints.add(new_location);
+                }
+            }
+
             ParkourRegion region = new ParkourRegion(key,loc);
+            region.setCheckpoints(checkpoints);
             region.setMinY(parkours.getInt(key+".min_y"));
+            region.setMaxTries(parkours.getInt("max_tries"));
 
             String fail_message = parkours.getString(key+".fail_message");
             region.setFailMessage(fail_message);

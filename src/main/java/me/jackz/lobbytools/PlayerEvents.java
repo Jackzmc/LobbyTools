@@ -6,8 +6,12 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import de.Herbystar.TTA.TTA_Methods;
+import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -18,7 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,6 +44,7 @@ class PlayerEvents implements Listener {
     };
     private boolean launchpad_enabled = false;
     private static ParkourRegionManager parkourRegionManager;
+    private static LanguageManager lm;
     private int y_teleport = 0;
     PlayerEvents(Main plugin) {
         this.plugin = plugin;
@@ -50,6 +54,7 @@ class PlayerEvents implements Listener {
         launchpad_enabled = plugin.getConfig().getBoolean("launchpad_enabled");
         y_teleport = plugin.getConfig().getInt("y_spawn_teleport");
         parkourRegionManager = plugin.getParkourRegionManager();
+        lm = plugin.getLanguageManager();
     }
 
 
@@ -58,7 +63,10 @@ class PlayerEvents implements Listener {
         Player p = e.getPlayer();
         if(!p.getWorld().equals(Main.world)) return;
 
-
+        Location from = e.getFrom();
+        Location to = e.getTo();
+        if(to == null) return; //apparently .getTo() can be null
+        if(from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ()) return;
 
         if(p.getLocation().getY() <= y_teleport) {
             p.teleport(Main.world.getSpawnLocation());
@@ -72,16 +80,36 @@ class PlayerEvents implements Listener {
         for (ProtectedRegion region : set) {
             for (ParkourRegion parkourRegion : parkourRegionList) {
                 if(region.getId().equalsIgnoreCase(parkourRegion.getName())) {
+                	if(!p.getGameMode().equals(GameMode.CREATIVE) & !p.getGameMode().equals(GameMode.SPECTATOR)) {
+		                if (p.isFlying()) {
+			                lm.send(p, "parkour.flight_disabled");
+		                }
+		                p.setAllowFlight(false);
+		                p.setFlying(false);
+	                }
                     //is parkour region
                     if(p.getLocation().getY() < parkourRegion.getMinY()) {
-                        p.teleport(parkourRegion.getSpawnPoint(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-                        if(parkourRegion.hasFailMessage()) p.sendMessage(parkourRegion.getFailMessage());
+                        parkourRegion.respawnPlayer(p);
+                        //p.teleport(parkourRegion.getSpawnPoint(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                        //if(parkourRegion.hasFailMessage()) p.sendMessage(parkourRegion.getFailMessage());
+                    }else{
+                        Block beneath = p.getLocation().subtract(0,1,0).getBlock();
+                        if(beneath.getType().equals(Material.GOLD_BLOCK)) {
+                            int next_checkpoint_id = parkourRegion.nextCheckpoint(p) + 1;
+                            if(plugin.isPluginEnabled("TTA")) {
+                                String message = lm.get("parkour.next_checkpoint",next_checkpoint_id);
+                                TTA_Methods.sendActionBar(p,message,40);
+                            }
+                        }
                     }
-                    break;
+                    return;
                 }
             }
         }
-
+        //need some check so not called 24/7?
+        if(!p.isFlying() && !p.getAllowFlight() && p.hasPermission("lobbytools.lobby.flight")) {
+            p.setAllowFlight(true);
+        }
     }
 
 
@@ -99,8 +127,8 @@ class PlayerEvents implements Listener {
                         break;
                     }
                 }
-
             }
+            return;
         }
         if (item == null) {
             if (!p.hasPermission("lobbytools.bypass.inventory")) e.setCancelled(true);

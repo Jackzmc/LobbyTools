@@ -27,7 +27,6 @@ public final class LanguageManager {
     public String getCommand(String name, Object... arguments) {
         return String.format(map.get("command." + name),arguments);
     }
-    @Deprecated
     public String get(String name,Object... arguments) {
         return String.format(map.get(name),arguments);
     }
