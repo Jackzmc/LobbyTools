@@ -109,7 +109,7 @@ class InventoryEvents implements Listener {
                 for(String server : server_ids) {
                     plugin.getLogger().info(lore_server + " : " + server);
                     if(lore_server.equals(server)) {
-                        p.sendMessage(lm.get("teleport_to_server",server));
+                        lm.send(p,"teleport_to_server",server);
                         ByteArrayDataOutput out = ByteStreams.newDataOutput();
                         out.writeUTF("Connect");
                         out.writeUTF(server);

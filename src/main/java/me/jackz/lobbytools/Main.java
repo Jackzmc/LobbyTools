@@ -49,6 +49,7 @@ public final class Main extends JavaPlugin {
         String config_world = getConfig().getString("lobby_world");
         if(config_world != null) world = Bukkit.getWorld(config_world);
         if(world == null) world = Bukkit.getWorld("world");
+        getLogger().info("Configured to run on world: " + world.getName());
 
         //load managers & register events & commands
         loadManagersAndEvents();

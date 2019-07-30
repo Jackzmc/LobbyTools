@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -19,14 +20,16 @@ class JoinEvent implements Listener {
     }
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        setupPlayer(e.getPlayer());
+        setupPlayer(e.getPlayer(),true);
     }
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
-        setupPlayer(e.getPlayer());
+        setupPlayer(e.getPlayer(),true);
     }
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e) { setupPlayer(e.getPlayer(),false); }
 
-    private void setupPlayer(Player p) {
+    private void setupPlayer(Player p,boolean isWorldJoin) {
         /*if(!p.hasPermission("lobbytools.bypass.lobby")) {*/
 
         /*}*/
@@ -36,13 +39,14 @@ class JoinEvent implements Listener {
             p.getInventory().setItem(1,Util.getNamedItem(Material.CLOCK,"§6Player Hider","§7Toggle hiding players"));
             p.getInventory().setItem(4,Util.getNamedItem(Material.NETHER_STAR,"§6Server Selector","§7Select a server"));
             p.getInventory().setItem(7,Util.getNamedItem(Material.CHEST,"§6Gadgets","§7Fun toys for all"));
-
-            String title = plugin.getConfig().getString("messages.title");
-            String subtitle = plugin.getConfig().getString("messages.subtitle");
-            p.sendTitle(title,subtitle,0,20,0);
-            if(plugin.isPluginEnabled("TTA")) {
-                String actionbar = plugin.getConfig().getString("messages.actionbar");
-                TTA_Methods.sendActionBar(p, actionbar);
+            if(isWorldJoin) {
+                String title = plugin.getConfig().getString("messages.title");
+                String subtitle = plugin.getConfig().getString("messages.subtitle");
+                p.sendTitle(title, subtitle, 0, 20, 0);
+                if (plugin.isPluginEnabled("TTA")) {
+                    String actionbar = plugin.getConfig().getString("messages.actionbar");
+                    TTA_Methods.sendActionBar(p, actionbar);
+                }
             }
             //todo: add bossbar ?
             //temp. measure to stop saturation issues:
