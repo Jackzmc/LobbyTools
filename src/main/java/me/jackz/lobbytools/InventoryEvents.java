@@ -119,8 +119,7 @@ class InventoryEvents implements Listener {
                     }
                 }
             }
-            p.sendMessage(lm.get("server_incorrect_format"));
-            p.sendMessage("§cSorry, but that server is not configured correctly.");
+            lm.send(p,"server_incorrect_format");
             view.close();
         }else if(view.getTitle().equalsIgnoreCase(GADGETS_MENU_NAME)) {
             e.setCancelled(true);
