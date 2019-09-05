@@ -10,3 +10,22 @@ commands:
     aliases: [lt,lb]
     usage: /lobbytools help
     description: Lobby Tools Main Commmand
+permissions:
+  lobbytools.command.*:
+    description: Usage of the /lobbytools command,
+    default: op
+    children:
+      lobbytools.command.reload: true
+      lobbytools.command.parkour: true
+  lobbytools.lobby.*:
+    description: Lobby features / perks
+    default: op
+    children:
+      lobbytools.lobby.flight: true
+  lobbytools.bypass.*:
+    description: Bypass lobby tool events/actions
+    default: op
+    children:
+      lobbytools.bypass.lobby: true
+      lobbytools.bypass.inventory: true
+      lobbytools.bypass.hide: true

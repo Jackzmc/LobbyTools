@@ -29,6 +29,6 @@ command:
         success: "&aSuccessfully reloaded configuration."
         failed_general: "&cFailed to load configuration file"
         failed_invalid: "&cFailed to load configuration file due to invalid configuration."
-teleport_to_server: "&eTeleporting you to &s"
+teleport_to_server: "&eTeleporting you to %s"
 server_incorrect_format: "&cSorry, but that server is not configured correctly."
 incorrect_gadget: "&cSorry but that gadget isn't setup correctly."
