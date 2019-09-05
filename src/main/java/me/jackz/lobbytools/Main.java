@@ -1,21 +1,28 @@
 package me.jackz.lobbytools;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
 import me.jackz.lobbytools.lib.LanguageManager;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
+import me.jackz.lobbytools.lib.ServerItem;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
 
-public final class Main extends JavaPlugin {
+//@org.bukkit.plugin.java.annotation.plugin.Plugin(name="LobbyTools",version="${project.version}")
+public final class Main extends JavaPlugin implements PluginMessageListener {
     private static InventoryEvents inventoryEvents;
     private static PlayerEvents playerEvents;
     private static ParkourRegionManager parkourRegionManager;
@@ -32,7 +39,11 @@ public final class Main extends JavaPlugin {
     /*todo:
      parkour regions
      gadgets
-
+     lobby selector
+     pets
+     rewards
+     scoreboard
+     server selector, change to based on slot, not lore
      */
 
     @Override
@@ -58,7 +69,7 @@ public final class Main extends JavaPlugin {
         //noinspection ConstantConditions
         //register for bungeecoord channel, for server changing
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
         //check for plugins w/ warnings on fail
         if(!isPluginEnabled("TTA")) getLogger().warning("TTA not found, join action bar messages will be disabled");
         if(!isPluginEnabled("WorldGuard")) getLogger().warning("WorldGuard not found, parkour regions feature will be disabled");
@@ -67,7 +78,7 @@ public final class Main extends JavaPlugin {
     void reloadPlugin() {
         String config_world = getConfig().getString("lobby_world");
         if(config_world != null) world = Bukkit.getWorld(config_world);
-        inventoryEvents.updateInventories();
+        inventoryEvents.setupServerSelector();
         playerEvents.reloadVariables();
         //playerEvents.updateRegions();
         lm.loadMessages();
@@ -76,7 +87,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         //save data in classes
-        parkourRegionManager.saveRegions();
+        if(parkourRegionManager != null) parkourRegionManager.saveRegions();
         //unload variables, probably not needed
         lm = null;
         inventoryEvents = null;
@@ -86,7 +97,30 @@ public final class Main extends JavaPlugin {
         parkourRegionManager = null;
         // Plugin shutdown logic
     }
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (channel.equals("BungeeCord")) {
 
+            ByteArrayDataInput in = ByteStreams.newDataInput(message);
+            String subchannel = in.readUTF();
+            try {
+                if (subchannel.equals("PlayerCount")) {
+                    String server = in.readUTF(); // Name of server, as given in the arguments
+                    int playercount = in.readInt();
+                    if(playercount == 0) playercount = 1;
+
+                    ServerItem serveritem = inventoryEvents.serverSelectorServers.get(server);
+                    if (serveritem != null) {
+                        ItemStack existing = serveritem.getItemStack();
+                        existing.setAmount(playercount);
+                        serveritem.setItemStack(existing);
+                    }
+                }
+            }catch(Exception e) {
+
+            }
+        }
+    }
     private boolean setupEconomy()
     {
         try {
@@ -132,6 +166,7 @@ public final class Main extends JavaPlugin {
     LanguageManager getLanguageManager() {
         return lm;
     }
+
     static Economy getECONOMY() { return ECONOMY; }
 
 

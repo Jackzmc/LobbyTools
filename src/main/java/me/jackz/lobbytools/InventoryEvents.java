@@ -2,7 +2,9 @@ package me.jackz.lobbytools;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.jackz.lobbytools.lib.Gadget;
 import me.jackz.lobbytools.lib.LanguageManager;
+import me.jackz.lobbytools.lib.ServerItem;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,8 +22,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class InventoryEvents implements Listener {
     private final Main plugin;
@@ -33,12 +34,35 @@ class InventoryEvents implements Listener {
     final static Inventory SERVER_SELECTOR = Bukkit.createInventory(null,54,SERVER_SELECTOR_NAME);
     final static Inventory GADGETS_MENU = Bukkit.createInventory(null,54,GADGETS_MENU_NAME);
     private Set<String> server_ids;
+    Map<String,ServerItem> serverSelectorServers = new HashMap<>();
+
+    //Map<Player, Gadget> activeGadgets = new HashMap<>();
+
     InventoryEvents(Main plugin) {
         this.plugin = plugin;
         this.lm = plugin.getLanguageManager();
-        updateInventories();
+        setupServerSelector();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                Collection players = plugin.getServer().getOnlinePlayers();
+                if(players.size() > 0) {
+                    Player player = (Player) players.iterator().next();
+                    for (Map.Entry<String, ServerItem> entry : serverSelectorServers.entrySet()) {
+                        entry.getValue().updatePlayerCount(plugin,player);
+                    }
+                    updateServerSelector();
+                }
+            }
+        },0,20*60);
     }
-    void updateInventories() {
+    void updateServerSelector() {
+        SERVER_SELECTOR.clear();
+        for (ServerItem server : serverSelectorServers.values()) {
+            SERVER_SELECTOR.setItem(server.getSlot(),server.getItemStack());
+        }
+    }
+    void setupServerSelector() {
         //server selector
         SERVER_SELECTOR.clear();
         ConfigurationSection sec = plugin.getConfig().getConfigurationSection("servers");
@@ -67,7 +91,8 @@ class InventoryEvents implements Listener {
             if(slot >= SERVER_SELECTOR.getMaxStackSize()) break; //todo: allow new pages
             lore.add("§7Server:"+key);
             ItemStack itemstack = Util.getNamedItem(material, ChatColor.GOLD + name,lore);
-
+            ServerItem serverItem = new ServerItem(key,itemstack,slot,name);
+            serverSelectorServers.put(key,serverItem);
             SERVER_SELECTOR.setItem(slot,itemstack);
             if(slot == 24 || slot == 16 || slot == 34) {
                 slot+=2;
@@ -97,7 +122,6 @@ class InventoryEvents implements Listener {
         InventoryView view = e.getView();
         Player p = (Player) e.getWhoClicked();
         ItemStack item = e.getCurrentItem();
-
         if(view.getTitle().equalsIgnoreCase(SERVER_SELECTOR_NAME)) {
             e.setCancelled(true);
             if(item == null || !item.hasItemMeta()) return;
@@ -125,6 +149,7 @@ class InventoryEvents implements Listener {
             e.setCancelled(true);
             //p.sendMessage("§cSorry, but gadgets aren't implemented yet.");
             if(item == null || !item.hasItemMeta()) return;
+            p.sendMessage(item.getType().toString());
             switch(item.getType()) {
                 case LEATHER_BOOTS:
                     //possibly set global hashmap of current gadget
@@ -132,9 +157,11 @@ class InventoryEvents implements Listener {
                     LeatherArmorMeta djump_boots_meta = (LeatherArmorMeta) djump_boots.getItemMeta();
                     djump_boots_meta.setColor(Color.GREEN);
                     djump_boots.setItemMeta(djump_boots_meta);
-                    e.setCurrentItem(djump_boots);
+                    p.getInventory().setItem(8,djump_boots);
+                    DataStore.activeGadgets.put(p,Gadget.DOUBLE_JUMP);
                     break;
                 default:
+                    DataStore.activeGadgets.put(p,Gadget.NONE);
                     p.sendMessage(lm.get("incorrect_gadget"));
             }
         }
