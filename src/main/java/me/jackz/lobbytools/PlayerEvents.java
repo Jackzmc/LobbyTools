@@ -6,8 +6,10 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import me.jackz.lobbytools.lib.Gadget;
 import me.jackz.lobbytools.lib.ParkourRegion;
 import me.jackz.lobbytools.lib.ParkourRegionManager;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -19,6 +21,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -52,12 +55,24 @@ class PlayerEvents implements Listener {
         parkourRegionManager = plugin.getParkourRegionManager();
     }
 
+    @EventHandler
+    public void onFlightAttempt(PlayerToggleFlightEvent event) {
+
+        Player p = event.getPlayer();
+        if(p.getGameMode() == GameMode.ADVENTURE) {
+            event.setCancelled(true);
+            Gadget active_gadget = DataStore.activeGadgets.get(p);
+            if(active_gadget == Gadget.DOUBLE_JUMP) {
+                Vector v = p.getLocation().getDirection().multiply(1).setY(1);
+                p.setVelocity(v);
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         if(!p.getWorld().equals(Main.world)) return;
-
 
 
         if(p.getLocation().getY() <= y_teleport) {
