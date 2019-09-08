@@ -59,7 +59,7 @@ public final class Main extends JavaPlugin implements PluginMessageListener {
         //get the main plugin world
         String config_world = getConfig().getString("lobby_world");
         if(config_world != null) world = Bukkit.getWorld(config_world);
-        if(world == null) world = Bukkit.getWorld("world");
+        if(world == null) world = Bukkit.getWorlds().get(0);
         getLogger().info("Configured to run on world: " + world.getName());
 
         //load managers & register events & commands
