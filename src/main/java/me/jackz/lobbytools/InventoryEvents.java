@@ -2,9 +2,9 @@ package me.jackz.lobbytools;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import me.jackz.lobbytools.lib.Gadget;
-import me.jackz.lobbytools.lib.LanguageManager;
-import me.jackz.lobbytools.lib.ServerItem;
+import me.jackz.lobbytools.utils.Gadget;
+import me.jackz.lobbytools.utils.LanguageManager;
+import me.jackz.lobbytools.utils.ServerItem;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

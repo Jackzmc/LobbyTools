@@ -2,9 +2,9 @@ package me.jackz.lobbytools;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import me.jackz.lobbytools.lib.LanguageManager;
-import me.jackz.lobbytools.lib.ParkourRegionManager;
-import me.jackz.lobbytools.lib.ServerItem;
+import me.jackz.lobbytools.utils.LanguageManager;
+import me.jackz.lobbytools.utils.ParkourRegionManager;
+import me.jackz.lobbytools.utils.ServerItem;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

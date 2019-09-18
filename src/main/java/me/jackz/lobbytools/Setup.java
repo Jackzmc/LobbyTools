@@ -32,6 +32,8 @@ class Setup {
 		config.addDefault("messages.title","Welcome to the Server!");
 		config.addDefault("messages.subtitle","");
 		config.addDefault("messages.actionbar","");
+		config.addDefault("region_flags.example.parkour",false);
+		config.addDefault("region_flags.example.gadgets",false);
 		config.addDefault("scoreboard",new ArrayList<String>());
 		config.options().copyDefaults(true);
 		try {

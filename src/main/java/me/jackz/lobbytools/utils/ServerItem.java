@@ -1,4 +1,4 @@
-package me.jackz.lobbytools.lib;
+package me.jackz.lobbytools.utils;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;

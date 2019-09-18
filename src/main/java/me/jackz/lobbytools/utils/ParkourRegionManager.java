@@ -1,4 +1,4 @@
-package me.jackz.lobbytools.lib;
+package me.jackz.lobbytools.utils;
 
 import me.jackz.lobbytools.Main;
 import org.bukkit.Location;

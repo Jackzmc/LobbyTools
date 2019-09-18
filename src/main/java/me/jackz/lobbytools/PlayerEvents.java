@@ -6,9 +6,9 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import me.jackz.lobbytools.lib.Gadget;
-import me.jackz.lobbytools.lib.ParkourRegion;
-import me.jackz.lobbytools.lib.ParkourRegionManager;
+import me.jackz.lobbytools.utils.Gadget;
+import me.jackz.lobbytools.utils.ParkourRegion;
+import me.jackz.lobbytools.utils.ParkourRegionManager;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -63,6 +63,7 @@ class PlayerEvents implements Listener {
             event.setCancelled(true);
             Gadget active_gadget = DataStore.activeGadgets.get(p);
             if(active_gadget == Gadget.DOUBLE_JUMP) {
+                //todo: get region, disable it
                 Vector v = p.getLocation().getDirection().multiply(1).setY(1);
                 p.setVelocity(v);
             }
@@ -148,6 +149,7 @@ class PlayerEvents implements Listener {
                 }
                 break;
             }case CHEST: {
+                //todo: get region, disable it
                 p.openInventory(InventoryEvents.GADGETS_MENU);
                 break;
             } case NETHER_STAR:

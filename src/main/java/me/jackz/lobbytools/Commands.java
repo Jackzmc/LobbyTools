@@ -1,8 +1,8 @@
 package me.jackz.lobbytools;
 
-import me.jackz.lobbytools.lib.LanguageManager;
-import me.jackz.lobbytools.lib.ParkourRegion;
-import me.jackz.lobbytools.lib.ParkourRegionManager;
+import me.jackz.lobbytools.utils.LanguageManager;
+import me.jackz.lobbytools.utils.ParkourRegion;
+import me.jackz.lobbytools.utils.ParkourRegionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

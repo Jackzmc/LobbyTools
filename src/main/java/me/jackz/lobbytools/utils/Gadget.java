@@ -1,4 +1,4 @@
-package me.jackz.lobbytools.lib;
+package me.jackz.lobbytools.utils;
 
 public enum Gadget {
     NONE,

@@ -1,4 +1,4 @@
-package me.jackz.lobbytools.lib;
+package me.jackz.lobbytools.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

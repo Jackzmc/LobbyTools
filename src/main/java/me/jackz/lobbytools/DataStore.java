@@ -1,6 +1,6 @@
 package me.jackz.lobbytools;
 
-import me.jackz.lobbytools.lib.Gadget;
+import me.jackz.lobbytools.utils.Gadget;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
