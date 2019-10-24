@@ -1,5 +1,5 @@
 # LobbyTools [![Build Status](https://ci.jackz.me/job/LobbyTools/badge/icon)](https://ci.jackz.me/job/LobbyTools/)
-A group of tools & utilities for a bungeecoord lobby server, complete with: 
+A group of tools & utilities for a bungeecord lobby server, complete with: 
 * Parkour Regions
 * Auto Teleporting back to spawn
 * No fall damage
